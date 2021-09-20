@@ -1,3 +1,6 @@
+// Created with:
+// https://start.spring.io/#!type=gradle-project&language=kotlin&platformVersion=2.5.4&packaging=jar&jvmVersion=16&groupId=com.artemkaxboy&artifactId=redmine-exporter&name=redmine-exporter&description=Redmine%20metrics%20exporter%20for%20prometheus&packageName=com.artemkaxboy.redmineexporter&dependencies=mysql,data-jpa,prometheus
+
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
