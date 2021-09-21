@@ -1,21 +1,25 @@
 package com.artemkaxboy.redmineexporter.metrics
 
-import com.artemkaxboy.redmineexporter.config.properties.RedmineProperties
-import com.artemkaxboy.redmineexporter.repository.VersionRepository
+import com.artemkaxboy.redmineexporter.entity.Version
 import com.artemkaxboy.redmineexporter.service.IssueService
 import com.artemkaxboy.redmineexporter.service.IssueStatusService
 import com.artemkaxboy.redmineexporter.service.VersionService
 import io.micrometer.core.instrument.Gauge
+import io.micrometer.core.instrument.Meter
 import io.micrometer.core.instrument.MeterRegistry
+import mu.KotlinLogging
 import org.springframework.stereotype.Component
 import javax.annotation.PostConstruct
 
+const val STATUS_TAG = "status"
+const val PROJECT_TAG = "project"
 const val VERSION_TAG = "version"
+const val CLOSED_TAG = "closed"
+
+private val logger = KotlinLogging.logger {}
 
 @Component
 class MetricsRegistry(
-
-    private val redmineProperties: RedmineProperties,
 
     private val issueService: IssueService,
     private val issueStatusService: IssueStatusService,
@@ -24,32 +28,33 @@ class MetricsRegistry(
     private val meterRegistry: MeterRegistry,
 ) {
 
+    val meters = mutableMapOf<Long, Meter.Id>()
+
     @PostConstruct
     private fun initMeters() {
 
         versionService.getAll().forEach {
-            initVersion(it.id, it.name)
+            logger.info { "Initialize metrics for project `${it.project?.name}` version `${it.name}`" }
+            initVersion(it)
         }
     }
 
-    fun initVersion(versionId: Long, versionName: String) {
+    fun initVersion(version: Version) {
 
-        issueStatusService.getAll().forEach {
-            Gauge
-                .builder("issues_by_status") {
-                    issueService.countByStatusId(versionId, it.id)
-                }
-                .tags("status", it.name, VERSION_TAG, versionName)
-                .register(meterRegistry)
-        }
+        issueStatusService.getAll().forEach { issueStatus ->
 
-        listOf(false to "opened", true to "closed").forEach {
             Gauge
-                .builder("issues_by_opened") {
-                    issueService.countByClosed(versionId, it.first)
+                .builder("redmine_project_issues") {
+                    issueService.countByStatusId(version.id, issueStatus.id)
                 }
-                .tags("status", it.second, VERSION_TAG, versionName)
+                .tags(
+                    STATUS_TAG, issueStatus.name,
+                    VERSION_TAG, version.name,
+                    CLOSED_TAG, "${issueStatus.isClosed}",
+                    PROJECT_TAG, "${version.project?.name}"
+                )
                 .register(meterRegistry)
+                .also { meter -> meters[version.id] = meter.id }
         }
     }
 }
