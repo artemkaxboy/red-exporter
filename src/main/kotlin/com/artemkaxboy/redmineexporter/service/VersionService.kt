@@ -16,6 +16,7 @@ class VersionService(
 ) {
 
     fun getAll(): List<Version> {
-        return versionRepository.findAllByIdIn(redmineProperties.versions)
+
+        return versionRepository.findByProjectIdInAndStatusIsOpened(redmineProperties.projects)
     }
 }

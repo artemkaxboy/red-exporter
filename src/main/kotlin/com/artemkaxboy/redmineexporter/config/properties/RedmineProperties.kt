@@ -7,5 +7,5 @@ import org.springframework.boot.context.properties.ConstructorBinding
 @ConfigurationProperties(prefix = "redmine")
 class RedmineProperties(
 
-    val versions: List<Long> = emptyList(),
+    val projects: List<Long> = emptyList(),
 )

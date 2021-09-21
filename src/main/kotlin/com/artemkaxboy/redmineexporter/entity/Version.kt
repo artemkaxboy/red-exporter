@@ -1,9 +1,6 @@
 package com.artemkaxboy.redmineexporter.entity
 
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
 @Table(name = "versions")
@@ -16,6 +13,10 @@ class Version(
 
     @Column(name = "project_id")
     val projectId: Long,
+
+    @ManyToOne
+    @JoinColumn(nullable = false, updatable = false, insertable = false)
+    val project: Project?,
 
     val status: String,
 )
