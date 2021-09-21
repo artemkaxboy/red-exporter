@@ -50,6 +50,9 @@ dependencies {
 //	Cache
 	implementation("org.springframework.boot:spring-boot-starter-cache")
 
+//	Logging
+	implementation("io.github.microutils:kotlin-logging:1.12.5")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
