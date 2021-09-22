@@ -1,5 +1,6 @@
 package com.artemkaxboy.redmineexporter.schedule
 
+import com.artemkaxboy.redmineexporter.service.IssueService
 import mu.KotlinLogging
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.scheduling.annotation.EnableScheduling
@@ -14,11 +15,12 @@ private val logger = KotlinLogging.logger {}
 
 @Component
 @EnableScheduling
-class CacheCleaner {
+class CacheCleaner(private val issueService: IssueService) {
 
     @Scheduled(fixedDelay = CACHE_TTL, initialDelay = 0)
-    @CacheEvict("metrics", allEntries = true)
     fun evictAll() {
+
+        issueService.resetMetrics()
         logger.debug { "Cache cleaned" }
     }
 }

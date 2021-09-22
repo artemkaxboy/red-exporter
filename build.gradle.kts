@@ -8,21 +8,24 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
 	id("org.springframework.boot") version "2.5.4"
 	id("io.spring.dependency-management") version "1.0.11.RELEASE"
-	kotlin("jvm") version "1.5.21"
-	kotlin("plugin.spring") version "1.5.21"
-	kotlin("plugin.jpa") version "1.5.21"
+	kotlin("jvm") version "1.4.32"
+	kotlin("plugin.spring") version "1.4.32"
+	kotlin("plugin.jpa") version "1.4.32"
 
 	/*-------------------------------- JIB -----------------------------------------------*/
 	id("com.google.cloud.tools.jib") version "3.0.0"
 	id("org.ajoberstar.grgit") version "4.1.0"
 	/*-------------------------------- JIB -----------------------------------------------*/
+
+	// kapt does not work with kotlin 1.5.21 ------ 22-Sep-2021
+	kotlin("kapt") version "1.4.32"
 }
 
 group = "com.artemkaxboy"
 version = project.property("applicationVersion") as String
 val minorVersion = "$version".replace("^(\\d+\\.\\d+).*$".toRegex(), "$1")
 val majorVersion = "$version".replace("^(\\d+).*$".toRegex(), "$1")
-java.sourceCompatibility = JavaVersion.VERSION_16
+java.sourceCompatibility = JavaVersion.VERSION_15
 
 repositories {
 	mavenCentral()
@@ -47,11 +50,17 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	runtimeOnly("mysql:mysql-connector-java")
 
-//	Cache
-	implementation("org.springframework.boot:spring-boot-starter-cache")
-
 //	Logging
 	implementation("io.github.microutils:kotlin-logging:1.12.5")
+
+//	Annotation processing
+	compileOnly("org.springframework.boot:spring-boot-configuration-processor")
+	kapt("org.springframework.boot:spring-boot-configuration-processor")
+
+//  https://codeburst.io/criteria-queries-and-jpa-metamodel-with-spring-boot-and-kotlin-9c82be54d626
+//	Metamodels
+	implementation ("org.hibernate:hibernate-jpamodelgen:5.5.7.Final")
+	kapt("org.hibernate:hibernate-jpamodelgen:5.5.7.Final")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
@@ -59,7 +68,7 @@ dependencies {
 tasks.withType<KotlinCompile> {
 	kotlinOptions {
 		freeCompilerArgs = listOf("-Xjsr305=strict")
-		jvmTarget = "16"
+		jvmTarget = "15"
 	}
 }
 
