@@ -47,7 +47,7 @@ class MetricsRegistry(
 
             Gauge
                 .builder(REDMINE_PROJECT_ISSUES) {
-                    issueService.countByStatusId(version.id, issueStatus.id)
+                    issueService.getCountByVersionIdAndStatusId(version.id, issueStatus.id)
                 }
                 .tags(
                     STATUS_TAG, issueStatus.name,
