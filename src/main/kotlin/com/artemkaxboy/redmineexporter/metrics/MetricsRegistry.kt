@@ -16,6 +16,8 @@ const val PROJECT_TAG = "project"
 const val VERSION_TAG = "version"
 const val CLOSED_TAG = "closed"
 
+const val REDMINE_PROJECT_ISSUES = "redmine_project_issues"
+
 private val logger = KotlinLogging.logger {}
 
 @Component
@@ -44,7 +46,7 @@ class MetricsRegistry(
         issueStatusService.getAll().forEach { issueStatus ->
 
             Gauge
-                .builder("redmine_project_issues") {
+                .builder(REDMINE_PROJECT_ISSUES) {
                     issueService.countByStatusId(version.id, issueStatus.id)
                 }
                 .tags(

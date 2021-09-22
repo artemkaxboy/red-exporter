@@ -11,7 +11,17 @@ class IssueStatusService(
     private val issueStatusRepository: IssueStatusRepository
 ) {
 
+    var statuses = emptyList<IssueStatus>()
+
     fun getAll(): List<IssueStatus> {
-        return issueStatusRepository.findAll(Sort.by(IssueStatus::position.name))
+        if (statuses.isEmpty()) {
+            loadFromRepository()
+        }
+
+        return statuses
+    }
+
+    fun loadFromRepository() {
+        statuses = issueStatusRepository.findAll()
     }
 }
