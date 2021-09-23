@@ -21,11 +21,11 @@ class IssueService(
 
     fun isVersionCountersLoaded(versionId: Long): Boolean = metrics.containsKey(versionId)
 
-    fun getCountByVersionIdAndStatusId(versionId: Long, statusId: Long): Long? {
+    fun getCountByVersionIdAndStatusId(versionId: Long, statusId: Long): Long {
         if (!isVersionCountersLoaded(versionId)) {
             loadVersionCounters(versionId)
         }
 
-        return metrics[versionId]?.get(statusId)
+        return metrics[versionId]?.get(statusId) ?: 0
     }
 }
