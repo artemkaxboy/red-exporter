@@ -48,6 +48,9 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	runtimeOnly("mysql:mysql-connector-java")
 
+//	Cache
+	implementation("org.springframework.boot:spring-boot-starter-cache")
+
 //	Logging
 	implementation("io.github.microutils:kotlin-logging:1.12.5")
 
