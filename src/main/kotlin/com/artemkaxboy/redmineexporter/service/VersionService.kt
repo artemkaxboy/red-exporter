@@ -2,22 +2,61 @@ package com.artemkaxboy.redmineexporter.service
 
 import com.artemkaxboy.redmineexporter.config.properties.RedmineProperties
 import com.artemkaxboy.redmineexporter.entity.Version
+import com.artemkaxboy.redmineexporter.metrics.ClosedVersionDetectedEvent
 import com.artemkaxboy.redmineexporter.repository.VersionRepository
-import org.springframework.cache.annotation.Cacheable
-import org.springframework.data.repository.findByIdOrNull
+import mu.KotlinLogging
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
+
+
+private val logger = KotlinLogging.logger {}
 
 @Service
 class VersionService(
 
     private val redmineProperties: RedmineProperties,
     private val versionRepository: VersionRepository,
-) {
+    private val applicationEventPublisher: ApplicationEventPublisher,
 
-    @Cacheable("versions_catalog")
-    fun getVersion(versionId: Long): Version? {
-        return versionRepository.findByIdOrNull(versionId)
+    ) {
+
+    private var versions = emptyMap<Long, List<Version>>()
+
+    fun updateVersions() {
+
+        loadVersionsForProject(redmineProperties.projects)
     }
 
-    fun getVersionByProject(projectId: Long): List<>
+    fun getVersionList(): List<Version> = versions.flatMap { it.value }
+
+    private fun loadVersionsForProject(projectId: List<Long>) {
+
+        val versionsByProject = versionRepository.fetchByProjectIdInAndStatusIsOpened(projectId)
+            .groupBy { it.projectId }
+
+        versionsByProject.forEach { (projectId, loadedVersions) ->
+
+            val existingVersions = versions.getOrDefault(projectId, emptyList())
+
+            (existingVersions - loadedVersions)
+                .sortedBy { it.id } // for better logs reading
+                .forEach { closedVersion ->
+
+                    logger.info { "Version closed: " +
+                            "project (#${closedVersion.projectId} ${closedVersion.project?.name}) " +
+                            "version (#${closedVersion.id} ${closedVersion.name})" }
+                    applicationEventPublisher.publishEvent(ClosedVersionDetectedEvent(version = closedVersion))
+                }
+
+            (loadedVersions - existingVersions)
+                .sortedBy { it.id } // for better logs reading
+                .forEach { openedVersion ->
+                    logger.info { "Version opened: " +
+                            "project (#${openedVersion.projectId} ${openedVersion.project?.name}) " +
+                            "version (#${openedVersion.id} ${openedVersion.name})" }
+                }
+        }
+
+        versions = versionsByProject
+    }
 }

@@ -12,4 +12,10 @@ class Project(
     val id: Long = -1,
 
     val name: String,
-)
+) {
+
+    @Override
+    override fun toString(): String {
+        return this::class.simpleName + "(id = $id , name = $name )"
+    }
+}
