@@ -61,7 +61,7 @@ class StatusMetricsRegistry(
      * Updates meter list for version. Deletes 0 meters, create new non-zero meters.
      *
      * @param version version to create metrics for
-     * @param metrics non-0 metrics for version
+     * @param metrics all non-zero metrics for version
      */
     fun registerMeters(version: Version, metrics: Map<IssueStatus, Long>) {
 
