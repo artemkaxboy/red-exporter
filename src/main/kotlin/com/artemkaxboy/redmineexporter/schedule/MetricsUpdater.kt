@@ -1,6 +1,6 @@
 package com.artemkaxboy.redmineexporter.schedule
 
-import com.artemkaxboy.redmineexporter.metrics.MetricsRegistry
+import com.artemkaxboy.redmineexporter.metrics.StatusMetricsRegistry
 import mu.KotlinLogging
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
@@ -14,12 +14,14 @@ private val logger = KotlinLogging.logger {}
 
 @Component
 @EnableScheduling
-class CacheCleaner(private val metricsRegistry: MetricsRegistry) {
+class MetricsUpdater(
+    private val statusMetricsRegistry: StatusMetricsRegistry,
+) {
 
     @Scheduled(fixedDelay = CACHE_TTL, initialDelay = 0)
     fun updateMetrics() {
         logger.debug { "Scheduler run: `updateMetrics`" }
-        metricsRegistry.updateMetrics()
+        statusMetricsRegistry.loadAllMetrics()
         logger.debug { "Scheduler finished: `updateMetrics`" }
     }
 }

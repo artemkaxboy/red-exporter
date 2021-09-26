@@ -3,11 +3,13 @@ package com.artemkaxboy.redmineexporter.metrics
 import com.artemkaxboy.redmineexporter.entity.IssueStatus
 import com.artemkaxboy.redmineexporter.entity.Version
 import com.artemkaxboy.redmineexporter.service.IssueService
+import com.artemkaxboy.redmineexporter.service.IssueStatusService
 import com.artemkaxboy.redmineexporter.service.VersionService
 import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.Meter
 import io.micrometer.core.instrument.MeterRegistry
 import mu.KotlinLogging
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 
 const val STATUS_TAG = "status"
@@ -20,27 +22,52 @@ const val REDMINE_PROJECT_ISSUES = "redmine_project_issues"
 private val logger = KotlinLogging.logger {}
 
 @Component
-class MetricsRegistry(
+class StatusMetricsRegistry(
 
     private val issueService: IssueService,
     private val meterRegistry: MeterRegistry,
     private val versionService: VersionService,
+    private val issueStatusService: IssueStatusService,
+    private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
 
-    val meters = mutableMapOf<Version, MutableMap<IssueStatus, Meter.Id>>()
+    private val meters = mutableMapOf<Version, MutableMap<IssueStatus, Meter.Id>>()
 
-    fun updateMetrics() {
+    /**
+     * Loads all metrics. Involves:
+     * * getting all active versions for each following project
+     * * loading all available metrics for each found version
+     * * generate per version `metrics updated` event containing metrics list
+     */
+    fun loadAllMetrics() {
 
         versionService.updateVersions()
-        issueService.updateCounters(versionService.getVersionList())
-// todo создать все метрики
+        issueStatusService.updateStatuses()
+        issueService.loadMetrics(versionService.getVersionList())
+
+        issueService.getAvailableMetrics().forEach { (versionId, metricsByStatus) ->
+
+            val version = versionService.getVersion(versionId) ?: return@forEach
+            val metrics = metricsByStatus.associate { statusId ->
+                issueStatusService.getStatus(statusId) to
+                        issueService.getMetricByVersionIdAndStatusId(versionId, statusId)
+            }
+
+            applicationEventPublisher.publishEvent(MetricsUpdatedEventListener.Event(version, metrics))
+        }
     }
 
-    fun registerMeters(version: Version, counters: Map<IssueStatus, Long>) {
+    /**
+     * Updates meter list for version. Deletes 0 meters, create new non-zero meters.
+     *
+     * @param version version to create metrics for
+     * @param metrics non-0 metrics for version
+     */
+    fun registerMeters(version: Version, metrics: Map<IssueStatus, Long>) {
 
         val existingMeters = meters.getOrPut(version) { mutableMapOf() }
         val existingMetersStatuses = existingMeters.keys
-        val foundStatuses = counters.keys
+        val foundStatuses = metrics.keys
 
         (existingMetersStatuses - foundStatuses)
             .sortedBy { it.id } // for better logs reading
@@ -65,7 +92,7 @@ class MetricsRegistry(
 
                 Gauge
                     .builder(REDMINE_PROJECT_ISSUES) {
-                        issueService.getCountByVersionIdAndStatusId(version.id, newStatus.id)
+                        issueService.getMetricByVersionIdAndStatusId(version.id, newStatus.id)
                     }
                     .tags(
                         PROJECT_TAG, "${version.project?.name}",

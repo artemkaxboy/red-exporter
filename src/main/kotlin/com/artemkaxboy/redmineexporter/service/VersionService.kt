@@ -2,7 +2,7 @@ package com.artemkaxboy.redmineexporter.service
 
 import com.artemkaxboy.redmineexporter.config.properties.RedmineProperties
 import com.artemkaxboy.redmineexporter.entity.Version
-import com.artemkaxboy.redmineexporter.metrics.ClosedVersionDetectedEvent
+import com.artemkaxboy.redmineexporter.metrics.VersionClosedEventListener
 import com.artemkaxboy.redmineexporter.repository.VersionRepository
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
@@ -29,6 +29,8 @@ class VersionService(
 
     fun getVersionList(): List<Version> = versions.flatMap { it.value }
 
+    fun getVersion(versionId: Long): Version? = getVersionList().find { it.id == versionId }
+
     private fun loadVersionsForProject(projectId: List<Long>) {
 
         val versionsByProject = versionRepository.fetchByProjectIdInAndStatusIsOpened(projectId)
@@ -42,18 +44,22 @@ class VersionService(
                 .sortedBy { it.id } // for better logs reading
                 .forEach { closedVersion ->
 
-                    logger.info { "Version closed: " +
-                            "project (#${closedVersion.projectId} ${closedVersion.project?.name}) " +
-                            "version (#${closedVersion.id} ${closedVersion.name})" }
-                    applicationEventPublisher.publishEvent(ClosedVersionDetectedEvent(version = closedVersion))
+                    logger.info {
+                        "Version closed: " +
+                                "project (#${closedVersion.projectId} ${closedVersion.project?.name}) " +
+                                "version (#${closedVersion.id} ${closedVersion.name})"
+                    }
+                    applicationEventPublisher.publishEvent(VersionClosedEventListener.Event(version = closedVersion))
                 }
 
             (loadedVersions - existingVersions)
                 .sortedBy { it.id } // for better logs reading
                 .forEach { openedVersion ->
-                    logger.info { "Version opened: " +
-                            "project (#${openedVersion.projectId} ${openedVersion.project?.name}) " +
-                            "version (#${openedVersion.id} ${openedVersion.name})" }
+                    logger.info {
+                        "Version opened: " +
+                                "project (#${openedVersion.projectId} ${openedVersion.project?.name}) " +
+                                "version (#${openedVersion.id} ${openedVersion.name})"
+                    }
                 }
         }
 

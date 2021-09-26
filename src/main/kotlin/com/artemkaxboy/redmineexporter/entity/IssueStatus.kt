@@ -20,6 +20,7 @@ class IssueStatus(
 
     val position: Int = id.toInt(),
 ) {
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
@@ -37,3 +38,17 @@ class IssueStatus(
 }
 
 val UNKNOWN_ISSUE_STATUS = IssueStatus(name = "Unknown", isClosed = 1)
+
+/**
+ * Class to represent grouped metrics info gotten from DB.
+ */
+class StatusMetrics(
+    val statusId: Long,
+    val metric: Long,
+) {
+
+    @Override
+    override fun toString(): String {
+        return this::class.simpleName + "(statusId = $statusId , metric = $metric )"
+    }
+}

@@ -1,46 +1,46 @@
 package com.artemkaxboy.redmineexporter.service
 
 import com.artemkaxboy.redmineexporter.entity.Version
-import com.artemkaxboy.redmineexporter.metrics.AddedMetricDetectedEvent
 import com.artemkaxboy.redmineexporter.repository.IssueRepository
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 
 @Service
 class IssueService(
 
     private val issueRepository: IssueRepository,
-    private val issueStatusService: IssueStatusService,
-    private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
 
+    /**
+     * Map containing live data values (Map: <VersionID <IssueStatusID, LiveDataMetrics>>).
+     */
     private val metrics = mutableMapOf<Long, Map<Long, Long>>()
 
-    /**
-     * Loads counters from DB for given version (todo don't do it here `and publish update event`)
-     * @param version version to load counters
-     */
-    private fun loadVersionCounters(version: Version) {
-        val currentCounters = issueRepository.countByFixedVersionIdGroupedByStatus(version.id)
-
-        applicationEventPublisher.publishEvent(
-            AddedMetricDetectedEvent(
-                version,
-                currentCounters.mapKeys { issueStatusService.getStatus(it.key) })
-        )
-
-        metrics[version.id] = currentCounters
+    private fun loadVersionMetrics(version: Version) {
+        val currentMetrics = issueRepository.countByFixedVersionIdGroupedByStatus(version.id)
+        metrics[version.id] = currentMetrics.associate { it.statusId to it.metric }
     }
 
-    fun getCountByVersionIdAndStatusId(versionId: Long, statusId: Long): Long {
+    fun getMetricByVersionIdAndStatusId(versionId: Long, statusId: Long): Long {
         return metrics[versionId]?.get(statusId) ?: 0
     }
 
-    fun updateCounters(versionList: List<Version>) {
-        versionList
+    /**
+     * Loads metrics from DB for all given versions.
+     * @param versions list of versions to load metrics for
+     */
+    fun loadMetrics(versions: List<Version>) {
+        versions
             .sortedBy { it.id } // for better logs reading
             .forEach {
-                loadVersionCounters(it)
+                loadVersionMetrics(it)
             }
+    }
+
+    /**
+     * Returns map of loaded metrics (Map <VersionID, Set<StatusID>>).
+     */
+    fun getAvailableMetrics(): Map<Long, Set<Long>> {
+
+        return metrics.mapValues { it.value.keys }
     }
 }
