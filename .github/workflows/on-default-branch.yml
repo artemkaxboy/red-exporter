@@ -65,12 +65,16 @@ jobs:
               jib -Dorg.gradle.console=plain
                   -Djib.to.image=${{ env.CONTAINER_IMAGE }}:${{ env.CONTAINER_IMAGE_TAG }}
                   -Djib.to.tags=${{ env.CONTAINER_IMAGE_TAG }}
-                  --debug
 
 #      - name: Publish dockerhub
 #        uses: eskatos/gradle-command-action@v1
 #        env:
 #          CONTAINER_REGISTRY_USERNAME: ${{ github.actor }}
-#          CONTAINER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
+#          CONTAINER_REGISTRY_TOKEN: ${{ secrets.DOCKERHUB_REGISTRY_TOKEN }}
+#          CONTAINER_IMAGE_TAG: SNAPSHOT
+#          CONTAINER_IMAGE: ghcr.io/${{ github.repository }}
 #        with:
-#          arguments: jib -Dorg.gradle.console=plain
+#          arguments: |
+#            jib -Dorg.gradle.console=plain
+#                -Djib.to.image=${{ env.CONTAINER_IMAGE }}:${{ env.CONTAINER_IMAGE_TAG }}
+#                -Djib.to.tags=${{ env.CONTAINER_IMAGE_TAG }}
