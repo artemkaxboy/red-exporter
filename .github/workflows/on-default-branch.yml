@@ -63,8 +63,8 @@ jobs:
         with:
           arguments: |
               jib -Dorg.gradle.console=plain
-                  -Djib.to.image='${CONTAINER_IMAGE}:${CONTAINER_IMAGE_TAG}'
-                  -Djib.to.tags='${CONTAINER_IMAGE_TAG}'
+                  -Djib.to.image='${{ env.CONTAINER_IMAGE }}:${{ env.CONTAINER_IMAGE_TAG }}'
+                  -Djib.to.tags='${{ env.CONTAINER_IMAGE_TAG }}'
 
 #      - name: Publish dockerhub
 #        uses: eskatos/gradle-command-action@v1
