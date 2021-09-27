@@ -53,24 +53,18 @@ jobs:
       - name: Set RELEASE_VERSION variable
         run: echo "ORG_GRADLE_PROJECT_applicationVersion=SNAPSHOT" >> $GITHUB_ENV
 
-      - name: test
-        env:
-          CONTAINER_REGISTRY_USERNAME: ${{ github.actor }}
-          CONTAINER_REGISTRY_TOKEN: ${{ secrets.GH_REGISTRY_TOKEN }}
-          CONTAINER_IMAGE_TAG: SNAPSHOT
-          CONTAINER_IMAGE: ghcr.io/${{ github.repository }}:${{ CONTAINER_IMAGE_TAG }}
-        run: export
-
       - name: Publish dockerhub
         uses: eskatos/gradle-command-action@v1
         env:
           CONTAINER_REGISTRY_USERNAME: ${{ github.actor }}
           CONTAINER_REGISTRY_TOKEN: ${{ secrets.GH_REGISTRY_TOKEN }}
           CONTAINER_IMAGE_TAG: SNAPSHOT
-          CONTAINER_IMAGE: ghcr.io/${{ github.repository }}:$CONTAINER_IMAGE_TAG
+          CONTAINER_IMAGE: ghcr.io/${{ github.repository }}
         with:
           arguments: |
-              jib -Dorg.gradle.console=plain -Djib.to.image='${CONTAINER_IMAGE}' -Djib.to.tags='${CONTAINER_IMAGE_TAG}'
+              jib -Dorg.gradle.console=plain
+                  -Djib.to.image='${CONTAINER_IMAGE}:${CONTAINER_IMAGE_TAG}'
+                  -Djib.to.tags='${CONTAINER_IMAGE_TAG}'
 
 #      - name: Publish dockerhub
 #        uses: eskatos/gradle-command-action@v1
