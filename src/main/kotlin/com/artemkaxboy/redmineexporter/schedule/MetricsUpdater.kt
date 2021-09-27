@@ -18,7 +18,7 @@ class MetricsUpdater(
     private val statusMetricsRegistry: StatusMetricsRegistry,
 ) {
 
-    @Scheduled(fixedDelay = 10_000, initialDelay = 0)
+    @Scheduled(fixedDelay = CACHE_TTL, initialDelay = 0)
     fun updateMetrics() {
         logger.debug { "Scheduler run: `updateMetrics`" }
         statusMetricsRegistry.loadAllMetrics()
