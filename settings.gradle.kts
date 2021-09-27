@@ -1,1 +1,1 @@
-rootProject.name = "redmine-exporter"
+rootProject.name = "red-exporter"

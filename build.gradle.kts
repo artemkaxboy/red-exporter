@@ -23,8 +23,6 @@ plugins {
 
 group = "com.artemkaxboy"
 version = project.property("applicationVersion") as String
-val minorVersion = "$version".replace("^(\\d+\\.\\d+).*$".toRegex(), "$1")
-val majorVersion = "$version".replace("^(\\d+).*$".toRegex(), "$1")
 java.sourceCompatibility = JavaVersion.VERSION_15
 
 repositories {
@@ -77,20 +75,15 @@ tasks.withType<Test> {
 }
 
 /*-------------------------------- JIB -----------------------------------------------*/
-// https://stackoverflow.com/questions/55749856/gradle-dsl-method-not-found-versioncode
-val lastCommit: Commit = Grgit.open { currentDir = projectDir }.head()
-val lastCommitTime = "${lastCommit.dateTime}"
-val lastCommitHash = lastCommit.id.take(8) // short commit id contains 8 chars
-
 // System properties as systemProp.jib.to.auth.username cannot be set as env variable
 // They suggest to use -Djib.to.auth.username instead:
 // https://discuss.gradle.org/t/setting-properties-via-org-gradle-project--environment-variables-is-impossible-for-names-with-in-them/1896
-// But github actions suggests to avoid passing secrets through the command-line
+// But GitHub actions suggests avoiding passing secrets through the command-line
 // https://docs.github.com/en/actions/reference/encrypted-secrets#using-encrypted-secrets-in-a-workflow
 // That's why custom env variables are used here. At the same time we can use -Djib... command line options to override
 // current envs.
-val jibUsername = System.getenv("CONTAINER_REGISTRY_USERNAME") ?: ""
-val jibPassword = System.getenv("CONTAINER_REGISTRY_TOKEN") ?: ""
+val jibUsername = System.getenv("CONTAINER_REGISTRY_USERNAME") as String
+val jibPassword = System.getenv("CONTAINER_REGISTRY_TOKEN") as String
 
 jib {
 	to {
@@ -98,13 +91,16 @@ jib {
 			username = jibUsername
 			password = jibPassword
 		}
-		tags = setOf("$version", minorVersion, majorVersion)
 	}
 
+	val applicationDescription: String by project
+	val lastCommitTime: String by project
+	val lastCommitHash: String by project
 	val author: String by project
 	val sourceUrl: String by project
+	val refName: String by project
 
-	container {
+    container {
 		user = "999:999"
 		creationTime = lastCommitTime
 		ports = listOf("8080")
@@ -125,8 +121,9 @@ jib {
 			"org.opencontainers.image.version" to "$version",
 			"org.opencontainers.image.revision" to lastCommitHash,
 			"org.opencontainers.image.vendor" to author,
-			"org.opencontainers.image.title" to name
+			"org.opencontainers.image.ref.name" to refName,
+			"org.opencontainers.image.title" to name,
+			"org.opencontainers.image.description" to applicationDescription,
 		)
 	}
 }
-/*-------------------------------- JIB -----------------------------------------------*/
