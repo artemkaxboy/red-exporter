@@ -45,12 +45,10 @@ class StatusMetricsRegistry(
         issueStatusService.updateStatuses()
         issueService.loadMetrics(versionService.getVersionList())
 
-        issueService.getAvailableMetrics().forEach { (versionId, metricsByStatus) ->
+        versionService.getVersionList().forEach { version ->
 
-            val version = versionService.getVersion(versionId) ?: return@forEach
-            val metrics = metricsByStatus.associate { statusId ->
-                issueStatusService.getStatus(statusId) to
-                        issueService.getMetricByVersionIdAndStatusId(versionId, statusId)
+            val metrics = issueStatusService.getAllStatuses().values.associateWith { issueStatus ->
+                issueService.getMetricByVersionIdAndStatusId(version.id, issueStatus.id)
             }
 
             applicationEventPublisher.publishEvent(MetricsUpdatedEventListener.Event(version, metrics))

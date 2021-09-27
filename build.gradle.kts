@@ -82,8 +82,8 @@ tasks.withType<Test> {
 // https://docs.github.com/en/actions/reference/encrypted-secrets#using-encrypted-secrets-in-a-workflow
 // That's why custom env variables are used here. At the same time we can use -Djib... command line options to override
 // current envs.
-val jibUsername = System.getenv("CONTAINER_REGISTRY_USERNAME") as String
-val jibPassword = System.getenv("CONTAINER_REGISTRY_TOKEN") as String
+val jibUsername = System.getenv("CONTAINER_REGISTRY_USERNAME") ?: ""
+val jibPassword = System.getenv("CONTAINER_REGISTRY_TOKEN") ?: ""
 
 jib {
 	to {
