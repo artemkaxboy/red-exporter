@@ -65,7 +65,7 @@ jobs:
           CONTAINER_IMAGE: ghcr.io/${{ github.repository }}:$CONTAINER_IMAGE_TAG
         with:
           arguments: |
-              jib -Dorg.gradle.console=plain -Djib.to.image='$CONTAINER_IMAGE' -Djib.to.tags='$CONTAINER_IMAGE_TAG'
+              jib -Dorg.gradle.console=plain -Djib.to.image='${CONTAINER_IMAGE}' -Djib.to.tags='${CONTAINER_IMAGE_TAG}'
 
 #      - name: Publish dockerhub
 #        uses: eskatos/gradle-command-action@v1
