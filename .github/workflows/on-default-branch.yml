@@ -4,7 +4,7 @@ name: Default branch build
 on:
   push:
     branches:
-      - main
+      - add-ci
 
 jobs:
 
@@ -59,11 +59,20 @@ jobs:
 #          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
 #        run: bash <(curl -Ls https://coverage.codacy.com/get.sh) report
 
+      - name: Docker login
+        env:
+          GH_REGISTRY_USERNAME: ${{ github.actor }}
+          GH_REGISTRY_TOKEN: ${{ secrets.GH_REGISTRY_TOKEN }}
+#          DOCKER_REGISTRY_USERNAME: ${{ github.actor }}
+#          DOCKER_REGISTRY_TOKEN: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
+        run: |
+          echo ${GH_REGISTRY_TOKEN} | docker login ghcr.io -u ${GH_REGISTRY_USERNAME} --password-stdin
+#          echo ${DOCKER_REGISTRY_TOKEN} | docker login -u ${DOCKER_REGISTRY_USERNAME} --password-stdin
+
+
       - name: Publish GitHub
         uses: eskatos/gradle-command-action@v1
         env:
-          CONTAINER_REGISTRY_USERNAME: ${{ github.actor }}
-          CONTAINER_REGISTRY_TOKEN: ${{ secrets.GH_REGISTRY_TOKEN }}
           IMAGE_NAME: ghcr.io/${{ github.repository }}
           IMAGE_TAG: ${{ env.VERSION }}
         with:
@@ -75,8 +84,6 @@ jobs:
 #      - name: Publish dockerhub
 #        uses: eskatos/gradle-command-action@v1
 #        env:
-#          CONTAINER_REGISTRY_USERNAME: ${{ github.actor }}
-#          CONTAINER_REGISTRY_TOKEN: ${{ secrets.DOCKERHUB_REGISTRY_TOKEN }}
 #          IMAGE_NAME: ${{ github.repository }}
 #          IMAGE_TAG: ${{ env.VERSION }}
 #        with:
