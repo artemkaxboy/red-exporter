@@ -19,10 +19,11 @@ jobs:
 
       - name: Determine variables
         run: |
+          export $PATCH_VERSION=${GITHUB_REF#refs/tags/v}
           echo "VERSION=latest" >> $GITHUB_ENV
-          echo "PATCH_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+          echo "PATCH_VERSION=${PATCH_VERSION}" >> $GITHUB_ENV
           echo "MINOR_VERSION=${PATCH_VERSION%.*}" >> $GITHUB_ENV
-          echo "MAJOR_VERSION=${MINOR_VERSION%.*}" >> $GITHUB_ENV
+          echo "MAJOR_VERSION=${PATCH_VERSION%.*.*}" >> $GITHUB_ENV
           echo "ORG_GRADLE_PROJECT_applicationVersion=SNAPSHOT" >> $GITHUB_ENV
           echo "ORG_GRADLE_PROJECT_lastCommitTime=$(git log -1 --format=%cd --date=iso-strict)" >> $GITHUB_ENV
           echo "ORG_GRADLE_PROJECT_lastCommitHash=${GITHUB_SHA:0:7}" >> $GITHUB_ENV
