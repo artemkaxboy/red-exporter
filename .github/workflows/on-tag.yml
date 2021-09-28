@@ -23,8 +23,6 @@ jobs:
           echo "PATCH_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
           echo "MINOR_VERSION=${VERSION%.*}" >> $GITHUB_ENV
           echo "MAJOR_VERSION=${MINOR_VERSION%.*}" >> $GITHUB_ENV
-          val minorVersion = "$version".replace("^(\\d+\\.\\d+).*$".toRegex(), "$1")
-          val majorVersion = "$version".replace("^(\\d+).*$".toRegex(), "$1")
           echo "ORG_GRADLE_PROJECT_applicationVersion=SNAPSHOT" >> $GITHUB_ENV
           echo "ORG_GRADLE_PROJECT_lastCommitTime=$(git log -1 --format=%cd --date=iso-strict)" >> $GITHUB_ENV
           echo "ORG_GRADLE_PROJECT_lastCommitHash=${GITHUB_SHA:0:7}" >> $GITHUB_ENV
