@@ -43,7 +43,7 @@ class StatusMetricsRegistry(
         issueService.loadMetrics(versionService.getVersionList())
 
         versionService.getVersionList().forEach { version ->
-
+            // todo check new versions registrations!!
             registerMetersForVersion(version)
         }
     }
