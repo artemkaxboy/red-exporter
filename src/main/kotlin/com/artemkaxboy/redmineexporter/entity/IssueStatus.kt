@@ -36,17 +36,3 @@ class IssueStatus(
         return this::class.simpleName + "(id = $id , name = $name , isClosed = $isClosed , position = $position )"
     }
 }
-
-/**
- * Class to represent grouped metrics info gotten from DB.
- */
-class StatusMetrics(
-    val statusId: Long,
-    val metric: Long,
-) {
-
-    @Override
-    override fun toString(): String {
-        return this::class.simpleName + "(statusId = $statusId , metric = $metric )"
-    }
-}

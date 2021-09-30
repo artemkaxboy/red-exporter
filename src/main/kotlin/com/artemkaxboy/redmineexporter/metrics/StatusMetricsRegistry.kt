@@ -32,20 +32,23 @@ class StatusMetricsRegistry(
 
     /**
      * Loads all metrics. Involves:
-     * * getting all active versions for each following project
-     * * loading all available metrics for each found version
-     * * creating all available statuses meters for each found version
+     * * updating static catalogs
+     * * fetching opened version for all projects
+     * * fetching metrics data
      */
     fun loadAllMetrics() {
 
-        versionService.updateVersions()
-        issueStatusService.updateStatuses()
-        issueService.loadMetrics(versionService.getVersionList())
+        loadStaticCatalogs()
+        loadDynamicData()
+    }
 
-        versionService.getVersionList().forEach { version ->
-            // todo check new versions registrations!!
-            registerMetersForVersion(version)
-        }
+    private fun loadStaticCatalogs() {
+        issueStatusService.fetchStatuses()
+    }
+
+    private fun loadDynamicData() {
+        versionService.fetchVersions()
+        issueService.loadMetrics(versionService.getAllVersions())
     }
 
     fun registerMetersForVersion(version: Version) {

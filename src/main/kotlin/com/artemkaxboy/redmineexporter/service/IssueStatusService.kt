@@ -12,7 +12,7 @@ class IssueStatusService(
 
     private var statuses = emptyList<IssueStatus>()
 
-    fun updateStatuses() {
+    fun fetchStatuses() {
         statuses = issueStatusRepository.findAll()
     }
 

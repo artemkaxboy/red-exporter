@@ -20,4 +20,18 @@ class VersionClosedEventListener(private val statusMetricsRegistry: StatusMetric
     class Event(val version: Version) : ApplicationEvent(Unit)
 }
 
+/**
+ * Listener should be notified each time when any project version has been opened.
+ * Meters for each possible issue status should be created.
+ */
+@Component
+class VersionOpenedEventListener(private val statusMetricsRegistry: StatusMetricsRegistry) :
+    ApplicationListener<VersionOpenedEventListener.Event> {
+
+    override fun onApplicationEvent(event: Event) {
+        statusMetricsRegistry.registerMetersForVersion(event.version)
+    }
+
+    class Event(val version: Version) : ApplicationEvent(Unit)
+}
 

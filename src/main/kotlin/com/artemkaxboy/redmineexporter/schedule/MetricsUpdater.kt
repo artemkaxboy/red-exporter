@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 
 const val SECOND = 1_000L
 const val MINUTE = 60 * SECOND
-const val CACHE_TTL = 10 * MINUTE
+const val CACHE_TTL = 10 * SECOND
 
 private val logger = KotlinLogging.logger {}
 

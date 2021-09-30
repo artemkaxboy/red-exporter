@@ -1,6 +1,7 @@
 package com.artemkaxboy.redmineexporter.service
 
 import com.artemkaxboy.redmineexporter.entity.Version
+import com.artemkaxboy.redmineexporter.entity.VersionWithMetrics
 import com.artemkaxboy.redmineexporter.repository.IssueRepository
 import org.springframework.stereotype.Service
 
@@ -13,15 +14,16 @@ class IssueService(
     /**
      * Map containing live data values (Map: <VersionID <IssueStatusID, LiveDataMetrics>>).
      */
-    private val metrics = mutableMapOf<Long, Map<Long, Long>>()
+    private val metricsByVersionByStatus = mutableMapOf<Long, Map<Long, Long>>()
 
     private fun loadVersionMetrics(version: Version) {
         val currentMetrics = issueRepository.countByFixedVersionIdGroupedByStatus(version.id)
-        metrics[version.id] = currentMetrics.associate { it.statusId to it.metric }
+
+        metricsByVersionByStatus[version.id] = currentMetrics.associate { it.statusId to it.metric }
     }
 
     fun getMetricByVersionIdAndStatusId(versionId: Long, statusId: Long): Long {
-        return metrics[versionId]?.get(statusId) ?: 0
+        return metricsByVersionByStatus[versionId]?.get(statusId) ?: 0
     }
 
     /**
@@ -41,6 +43,6 @@ class IssueService(
      */
     fun getAvailableMetrics(): Map<Long, Set<Long>> {
 
-        return metrics.mapValues { it.value.keys }
+        return metricsByVersionByStatus.mapValues { it.value.keys }
     }
 }

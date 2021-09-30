@@ -2,7 +2,7 @@ package com.artemkaxboy.redmineexporter.repository
 
 import com.artemkaxboy.redmineexporter.entity.Issue
 import com.artemkaxboy.redmineexporter.entity.Issue_
-import com.artemkaxboy.redmineexporter.entity.StatusMetrics
+import com.artemkaxboy.redmineexporter.entity.StatusWithMetric
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import javax.persistence.EntityManager
@@ -23,9 +23,9 @@ class IssueRepository(
     // Attempt to get Pair<Version,Long> have failed, because mysql doesn't allow combine
     // aggregated fields with non-aggregated ones. So, it should be done on upper level.
     @Suppress("SpringDataRepositoryMethodReturnTypeInspection", "SpringDataMethodInconsistencyInspection")
-    fun countByFixedVersionIdGroupedByStatus(fixedVersionId: Long): List<StatusMetrics> {
+    fun countByFixedVersionIdGroupedByStatus(fixedVersionId: Long): List<StatusWithMetric> {
         val builder = entityManager.criteriaBuilder
-        val query = builder.createQuery(StatusMetrics::class.java)
+        val query = builder.createQuery(StatusWithMetric::class.java)
 
         val root = query.from(Issue::class.java)
 
