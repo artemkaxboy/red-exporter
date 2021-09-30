@@ -29,8 +29,6 @@ class VersionService(
 
     fun getVersionList(): List<Version> = versions.flatMap { it.value }
 
-    fun getVersion(versionId: Long): Version? = getVersionList().find { it.id == versionId }
-
     private fun loadVersionsForProject(projectId: List<Long>) {
 
         val versionsByProject = versionRepository.fetchByProjectIdInAndStatusIsOpened(projectId)

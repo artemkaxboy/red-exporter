@@ -37,8 +37,6 @@ class IssueStatus(
     }
 }
 
-val UNKNOWN_ISSUE_STATUS = IssueStatus(name = "Unknown", isClosed = 1)
-
 /**
  * Class to represent grouped metrics info gotten from DB.
  */

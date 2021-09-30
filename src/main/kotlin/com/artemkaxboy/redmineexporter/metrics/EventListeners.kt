@@ -1,6 +1,5 @@
 package com.artemkaxboy.redmineexporter.metrics
 
-import com.artemkaxboy.redmineexporter.entity.IssueStatus
 import com.artemkaxboy.redmineexporter.entity.Version
 import org.springframework.context.ApplicationEvent
 import org.springframework.context.ApplicationListener
@@ -19,21 +18,6 @@ class VersionClosedEventListener(private val statusMetricsRegistry: StatusMetric
     }
 
     class Event(val version: Version) : ApplicationEvent(Unit)
-}
-
-/**
- * Listener should be notified each time when metrics read from DB.
- * 0 meters should be deleted, new non-zero meters should be created.
- */
-@Component
-class MetricsUpdatedEventListener(private val statusMetricsRegistry: StatusMetricsRegistry) :
-    ApplicationListener<MetricsUpdatedEventListener.Event> {
-
-    override fun onApplicationEvent(event: Event) {
-        statusMetricsRegistry.registerMeters(event.version, event.metrics)
-    }
-
-    class Event(val version: Version, val metrics: Map<IssueStatus, Long>) : ApplicationEvent(Unit)
 }
 
 

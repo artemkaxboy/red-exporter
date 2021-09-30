@@ -1,6 +1,5 @@
 package com.artemkaxboy.redmineexporter.metrics
 
-import com.artemkaxboy.redmineexporter.entity.IssueStatus
 import com.artemkaxboy.redmineexporter.entity.Version
 import com.artemkaxboy.redmineexporter.service.IssueService
 import com.artemkaxboy.redmineexporter.service.IssueStatusService
@@ -9,7 +8,6 @@ import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.Meter
 import io.micrometer.core.instrument.MeterRegistry
 import mu.KotlinLogging
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 
 const val STATUS_TAG = "status"
@@ -28,10 +26,9 @@ class StatusMetricsRegistry(
     private val meterRegistry: MeterRegistry,
     private val versionService: VersionService,
     private val issueStatusService: IssueStatusService,
-    private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
 
-    private val meters = mutableMapOf<Version, MutableMap<IssueStatus, Meter.Id>>()
+    private val meters = mutableMapOf<Version, List<Meter.Id>>()
 
     /**
      * Loads all metrics. Involves:
@@ -47,69 +44,26 @@ class StatusMetricsRegistry(
 
         versionService.getVersionList().forEach { version ->
 
-            val metrics = issueStatusService.getAllStatuses().values.associateWith { issueStatus ->
-                issueService.getMetricByVersionIdAndStatusId(version.id, issueStatus.id)
-            }
-
-            applicationEventPublisher.publishEvent(MetricsUpdatedEventListener.Event(version, metrics))
+            registerMetersForVersion(version)
         }
     }
 
-    /**
-     * Updates meter list for version. Deletes 0 meters, create new non-zero meters.
-     *
-     * @param version version to create metrics for
-     * @param metrics all non-zero metrics for version
-     */
-    fun registerMeters(version: Version, metrics: Map<IssueStatus, Long>) {
+    fun registerMetersForVersion(version: Version) {
 
-        val existingMeters = meters.getOrPut(version) { mutableMapOf() }
-        val existingMetersStatuses = existingMeters.keys
-        val foundStatuses = metrics.keys
-
-        (existingMetersStatuses - foundStatuses)
-            .sortedBy { it.id } // for better logs reading
-            .forEach { deletedStatus ->
-
-                existingMeters[deletedStatus]
-                    ?.also { meterRegistry.remove(it) }
-                    ?.also { existingMeters.remove(deletedStatus) }
-                    ?.also {
-                        logger.debug {
-                            "Meter removed: " +
-                                    "project (#${version.projectId} ${version.project?.name}) " +
-                                    "version (#${version.id} ${version.name}) " +
-                                    "status (#${deletedStatus.id} ${deletedStatus.name})"
-                        }
-                    }
-            }
-
-        (foundStatuses - existingMetersStatuses)
-            .sortedBy { it.id } // for better logs reading
-            .forEach { newStatus ->
-
-                Gauge
-                    .builder(REDMINE_PROJECT_ISSUES) {
-                        issueService.getMetricByVersionIdAndStatusId(version.id, newStatus.id)
-                    }
-                    .tags(
-                        PROJECT_TAG, "${version.project?.name}",
-                        VERSION_TAG, version.name,
-                        STATUS_TAG, newStatus.name,
-                        CLOSED_TAG, "${newStatus.isClosed}",
-                    )
-                    .register(meterRegistry)
-                    .also { existingMeters[newStatus] = it.id }
-                    .also {
-                        logger.debug {
-                            "Meter added: " +
-                                    "project (#${version.projectId} ${version.project?.name}) " +
-                                    "version (#${version.id} ${version.name}) " +
-                                    "status (#${newStatus.id} ${newStatus.name})"
-                        }
-                    }
-
-            }
+        meters[version] = issueStatusService.getAllStatuses().map { issueStatus ->
+            Gauge
+                .builder(REDMINE_PROJECT_ISSUES) {
+                    issueService.getMetricByVersionIdAndStatusId(version.id, issueStatus.id)
+                }
+                .tags(
+                    PROJECT_TAG, "${version.project?.name}",
+                    VERSION_TAG, version.name,
+                    STATUS_TAG, issueStatus.name,
+                    CLOSED_TAG, "${issueStatus.isClosed}",
+                )
+                .register(meterRegistry)
+                .id
+        }
     }
 
     fun unregisterMetersForVersion(closedVersion: Version) {
@@ -119,14 +73,8 @@ class StatusMetricsRegistry(
                     "version (#${closedVersion.id} ${closedVersion.name})"
         }
 
-        meters[closedVersion]?.forEach { (issueStatus, meterId) ->
+        meters[closedVersion]?.forEach { meterId ->
             meterRegistry.remove(meterId)
-            logger.debug {
-                "Meter removed: " +
-                        "project (#${closedVersion.projectId} ${closedVersion.project?.name}) " +
-                        "version (#${closedVersion.id} ${closedVersion.name}) " +
-                        "status (#${issueStatus.id} ${issueStatus.name})"
-            }
         }
     }
 }
