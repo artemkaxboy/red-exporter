@@ -1,5 +1,5 @@
 # Jobs to run on PR, tests, lint, check, etc.
-name: Default branch build
+name: Build release
 
 on:
   push:
@@ -8,9 +8,9 @@ on:
 
 jobs:
 
-  build-and-publish-default-branch:
+  build-and-publish-release:
 
-    name: Build and publish tag
+    name: Build and publish release
     runs-on: ubuntu-latest
     steps:
 
