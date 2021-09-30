@@ -1,6 +1,7 @@
 package com.artemkaxboy.redmineexporter.metrics
 
 import com.artemkaxboy.redmineexporter.entity.Version
+import com.artemkaxboy.redmineexporter.service.ActivityService
 import com.artemkaxboy.redmineexporter.service.IssueService
 import com.artemkaxboy.redmineexporter.service.IssueStatusService
 import com.artemkaxboy.redmineexporter.service.VersionService
@@ -25,7 +26,9 @@ class StatusMetricsRegistry(
     private val issueService: IssueService,
     private val meterRegistry: MeterRegistry,
     private val versionService: VersionService,
+
     private val issueStatusService: IssueStatusService,
+    private val activityService: ActivityService,
 ) {
 
     private val meters = mutableMapOf<Version, List<Meter.Id>>()
@@ -44,6 +47,7 @@ class StatusMetricsRegistry(
 
     private fun fetchStaticCatalogs() {
         issueStatusService.fetchStatuses()
+        activityService.fetchActivities()
     }
 
     private fun fetchDynamicData() {
