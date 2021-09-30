@@ -1,5 +1,6 @@
 package com.artemkaxboy.redmineexporter.entity
 
+import org.hibernate.Hibernate
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
@@ -25,4 +26,20 @@ class Activity (
 
     @Column(name = "project_id")
     val projectId: Long?,
-)
+) {
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
+        other as Activity
+
+        return id == other.id
+    }
+
+    override fun hashCode(): Int = 0
+
+    @Override
+    override fun toString(): String {
+        return this::class.simpleName + "(id = $id , name = $name , position = $position , type = $type , active = $active , projectId = $projectId )"
+    }
+}

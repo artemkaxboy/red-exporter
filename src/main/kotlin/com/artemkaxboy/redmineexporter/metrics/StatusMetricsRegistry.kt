@@ -26,6 +26,7 @@ class StatusMetricsRegistry(
     private val issueService: IssueService,
     private val meterRegistry: MeterRegistry,
     private val versionService: VersionService,
+//    private val
 
     private val issueStatusService: IssueStatusService,
     private val activityService: ActivityService,
@@ -53,6 +54,8 @@ class StatusMetricsRegistry(
     private fun fetchDynamicData() {
         versionService.fetchVersions()
         issueService.fetchMetrics(versionService.getAllVersions())
+
+
     }
 
     fun registerMetersForVersion(openedVersion: Version) {
