@@ -1,16 +1,16 @@
 # Jobs to run on PR, tests, lint, check, etc.
-name: Default branch build
+name: Build release
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - v*
 
 jobs:
 
-  build-and-publish-default-branch:
+  build-and-publish-release:
 
-    name: Build and publish default branch
+    name: Build and publish release
     runs-on: ubuntu-latest
     steps:
 
@@ -19,7 +19,11 @@ jobs:
 
       - name: Determine variables
         run: |
-          echo "VERSION=SNAPSHOT" >> $GITHUB_ENV
+          export PATCH_VERSION=${GITHUB_REF#refs/tags/v}
+          echo "VERSION=latest" >> $GITHUB_ENV
+          echo "PATCH_VERSION=${PATCH_VERSION}" >> $GITHUB_ENV
+          echo "MINOR_VERSION=${PATCH_VERSION%.*}" >> $GITHUB_ENV
+          echo "MAJOR_VERSION=${PATCH_VERSION%.*.*}" >> $GITHUB_ENV
           echo "ORG_GRADLE_PROJECT_applicationVersion=SNAPSHOT" >> $GITHUB_ENV
           echo "ORG_GRADLE_PROJECT_lastCommitTime=$(git log -1 --format=%cd --date=iso-strict)" >> $GITHUB_ENV
           echo "ORG_GRADLE_PROJECT_lastCommitHash=${GITHUB_SHA:0:7}" >> $GITHUB_ENV
@@ -74,20 +78,23 @@ jobs:
         env:
           IMAGE_NAME: ${{ github.repository }}
           IMAGE_TAG: ${{ env.VERSION }}
+          IMAGE_TAGS: ${{ env.VERSION }},${{ env.PATCH_VERSION }},${{ env.MINOR_VERSION }},${{ env.MAJOR_VERSION }}
         with:
           arguments: |
             jib
               -Dorg.gradle.console=plain
               -Djib.to.image=${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+              -Djib.to.tags=${{ env.IMAGE_TAGS }}
 
       - name: Publish GitHub
         uses: eskatos/gradle-command-action@v1
         env:
           IMAGE_NAME: ghcr.io/${{ github.repository }}
           IMAGE_TAG: ${{ env.VERSION }}
+          IMAGE_TAGS: ${{ env.VERSION }},${{ env.PATCH_VERSION }},${{ env.MINOR_VERSION }},${{ env.MAJOR_VERSION }}
         with:
           arguments: |
               jib
                 -Dorg.gradle.console=plain
                 -Djib.to.image=${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-
+                -Djib.to.tags=${{ env.IMAGE_TAGS }}

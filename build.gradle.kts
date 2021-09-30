@@ -1,8 +1,6 @@
 // Created with:
 // https://start.spring.io/#!type=gradle-project&language=kotlin&platformVersion=2.5.4&packaging=jar&jvmVersion=16&groupId=com.artemkaxboy&artifactId=redmine-exporter&name=redmine-exporter&description=Redmine%20metrics%20exporter%20for%20prometheus&packageName=com.artemkaxboy.redmineexporter&dependencies=mysql,data-jpa,prometheus,web
 
-import org.ajoberstar.grgit.Commit
-import org.ajoberstar.grgit.Grgit
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -14,7 +12,6 @@ plugins {
 
 	/*-------------------------------- JIB -----------------------------------------------*/
 	id("com.google.cloud.tools.jib") version "3.0.0"
-	id("org.ajoberstar.grgit") version "4.1.0"
 	/*-------------------------------- JIB -----------------------------------------------*/
 
 	// kapt does not work with kotlin 1.5.21 ------ 22-Sep-2021
@@ -75,24 +72,8 @@ tasks.withType<Test> {
 }
 
 /*-------------------------------- JIB -----------------------------------------------*/
-// System properties as systemProp.jib.to.auth.username cannot be set as env variable
-// They suggest to use -Djib.to.auth.username instead:
-// https://discuss.gradle.org/t/setting-properties-via-org-gradle-project--environment-variables-is-impossible-for-names-with-in-them/1896
-// But GitHub actions suggests avoiding passing secrets through the command-line
-// https://docs.github.com/en/actions/reference/encrypted-secrets#using-encrypted-secrets-in-a-workflow
-// That's why custom env variables are used here. At the same time we can use -Djib... command line options to override
-// current envs.
-val jibUsername = System.getenv("CONTAINER_REGISTRY_USERNAME") ?: ""
-val jibPassword = System.getenv("CONTAINER_REGISTRY_TOKEN") ?: ""
 
 jib {
-	to {
-		auth {
-			username = jibUsername
-			password = jibPassword
-		}
-	}
-
 	val applicationDescription: String by project
 	val lastCommitTime: String by project
 	val lastCommitHash: String by project
