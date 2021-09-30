@@ -86,15 +86,15 @@ jobs:
               -Djib.to.image=${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
               -Djib.to.tags=${{ env.IMAGE_TAGS }}
 
-       - name: Publish GitHub
-         uses: eskatos/gradle-command-action@v1
-         env:
-           IMAGE_NAME: ghcr.io/${{ github.repository }}
-           IMAGE_TAG: ${{ env.VERSION }}
-           IMAGE_TAGS: ${{ env.VERSION }},${{ env.PATCH_VERSION }},${{ env.MINOR_VERSION }},${{ env.MAJOR_VERSION }}
-         with:
-           arguments: |
-               jib
-                 -Dorg.gradle.console=plain
-                 -Djib.to.image=${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-                 -Djib.to.tags=${{ env.IMAGE_TAGS }}
+      - name: Publish GitHub
+        uses: eskatos/gradle-command-action@v1
+        env:
+          IMAGE_NAME: ghcr.io/${{ github.repository }}
+          IMAGE_TAG: ${{ env.VERSION }}
+          IMAGE_TAGS: ${{ env.VERSION }},${{ env.PATCH_VERSION }},${{ env.MINOR_VERSION }},${{ env.MAJOR_VERSION }}
+        with:
+          arguments: |
+              jib
+                -Dorg.gradle.console=plain
+                -Djib.to.image=${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+                -Djib.to.tags=${{ env.IMAGE_TAGS }}
