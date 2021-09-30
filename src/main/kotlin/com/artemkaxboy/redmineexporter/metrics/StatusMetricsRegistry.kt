@@ -36,31 +36,31 @@ class StatusMetricsRegistry(
      * * fetching opened version for all projects
      * * fetching metrics data
      */
-    fun loadAllMetrics() {
+    fun fetchAllMetrics() {
 
-        loadStaticCatalogs()
-        loadDynamicData()
+        fetchStaticCatalogs()
+        fetchDynamicData()
     }
 
-    private fun loadStaticCatalogs() {
+    private fun fetchStaticCatalogs() {
         issueStatusService.fetchStatuses()
     }
 
-    private fun loadDynamicData() {
+    private fun fetchDynamicData() {
         versionService.fetchVersions()
-        issueService.loadMetrics(versionService.getAllVersions())
+        issueService.fetchMetrics(versionService.getAllVersions())
     }
 
-    fun registerMetersForVersion(version: Version) {
+    fun registerMetersForVersion(openedVersion: Version) {
 
-        meters[version] = issueStatusService.getAllStatuses().map { issueStatus ->
+        meters[openedVersion] = issueStatusService.getAllStatuses().map { issueStatus ->
             Gauge
                 .builder(REDMINE_PROJECT_ISSUES) {
-                    issueService.getMetricByVersionIdAndStatusId(version.id, issueStatus.id)
+                    issueService.getMetricByVersionIdAndStatusId(openedVersion.id, issueStatus.id)
                 }
                 .tags(
-                    PROJECT_TAG, "${version.project?.name}",
-                    VERSION_TAG, version.name,
+                    PROJECT_TAG, "${openedVersion.project?.name}",
+                    VERSION_TAG, openedVersion.name,
                     STATUS_TAG, issueStatus.name,
                     CLOSED_TAG, "${issueStatus.isClosed}",
                 )
