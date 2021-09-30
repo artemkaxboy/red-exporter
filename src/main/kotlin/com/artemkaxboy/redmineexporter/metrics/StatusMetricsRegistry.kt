@@ -34,7 +34,7 @@ class StatusMetricsRegistry(
      * Loads all metrics. Involves:
      * * getting all active versions for each following project
      * * loading all available metrics for each found version
-     * * generate per version `metrics updated` event containing metrics list
+     * * creating all available statuses meters for each found version
      */
     fun loadAllMetrics() {
 
