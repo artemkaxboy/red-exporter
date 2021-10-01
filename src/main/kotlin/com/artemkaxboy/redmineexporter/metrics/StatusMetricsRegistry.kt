@@ -1,38 +1,41 @@
 package com.artemkaxboy.redmineexporter.metrics
 
+import com.artemkaxboy.redmineexporter.entity.User
 import com.artemkaxboy.redmineexporter.entity.Version
-import com.artemkaxboy.redmineexporter.service.ActivityService
-import com.artemkaxboy.redmineexporter.service.IssueService
-import com.artemkaxboy.redmineexporter.service.IssueStatusService
-import com.artemkaxboy.redmineexporter.service.VersionService
+import com.artemkaxboy.redmineexporter.service.*
 import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.Meter
 import io.micrometer.core.instrument.MeterRegistry
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
 
+const val REDMINE_PROJECT_ISSUES = "redmine_project_issues"
 const val STATUS_TAG = "status"
 const val PROJECT_TAG = "project"
 const val VERSION_TAG = "version"
 const val CLOSED_TAG = "closed"
 
-const val REDMINE_PROJECT_ISSUES = "redmine_project_issues"
+const val REDMINE_USER_ACTIVITIES = "redmine_user_activities"
+const val LOGIN_TAG = "login"
+const val ACTIVITY_TAG = "activity"
 
 private val logger = KotlinLogging.logger {}
 
 @Component
 class StatusMetricsRegistry(
 
-    private val issueService: IssueService,
     private val meterRegistry: MeterRegistry,
     private val versionService: VersionService,
-//    private val
+    private val userService: UserService,
+    private val issueService: IssueService,
+    private val timeEntryService: TimeEntryService,
 
     private val issueStatusService: IssueStatusService,
     private val activityService: ActivityService,
 ) {
 
     private val meters = mutableMapOf<Version, List<Meter.Id>>()
+    private val userMeters = mutableMapOf<User, List<Meter.Id>>()
 
     /**
      * Loads all metrics. Involves:
@@ -53,9 +56,9 @@ class StatusMetricsRegistry(
 
     private fun fetchDynamicData() {
         versionService.fetchVersions()
+        userService.fetchAllUsers()
         issueService.fetchMetrics(versionService.getAllVersions())
-
-
+        timeEntryService.fetchMetrics(userService.getAllUsers())
     }
 
     fun registerMetersForVersion(openedVersion: Version) {
@@ -87,4 +90,29 @@ class StatusMetricsRegistry(
             meterRegistry.remove(meterId)
         }
     }
+
+    fun registerMetersForUser(addedUser: User) {
+
+        userMeters[addedUser] = activityService.getAllActivities().map { activity ->
+            Gauge
+                .builder(REDMINE_USER_ACTIVITIES) {
+                    timeEntryService.getMetricByUserIdAndActivityId(addedUser.id, activity.id)
+                }
+                .tags(
+                    LOGIN_TAG, addedUser.login,
+                    ACTIVITY_TAG, activity.name,
+                )
+                .register(meterRegistry)
+                .id
+        }
+    }
+
+    fun unregisterMetersForUser(deletedUser: User) {
+        logger.debug { "Remove all meters for user (#${deletedUser.id} ${deletedUser.login})" }
+
+        userMeters[deletedUser]?.forEach { meterId ->
+            meterRegistry.remove(meterId)
+        }
+    }
+
 }

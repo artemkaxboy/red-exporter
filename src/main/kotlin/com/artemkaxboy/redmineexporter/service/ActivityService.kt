@@ -1,7 +1,6 @@
 package com.artemkaxboy.redmineexporter.service
 
 import com.artemkaxboy.redmineexporter.entity.Activity
-import com.artemkaxboy.redmineexporter.entity.IssueStatus
 import com.artemkaxboy.redmineexporter.repository.ActivityRepository
 import org.springframework.stereotype.Service
 
@@ -15,7 +14,6 @@ class ActivityService(
 
     fun fetchActivities() {
         activities = activityRepository.findAllShared()
-        println(activities)
     }
 
     fun getAllActivities(): List<Activity> = activities
