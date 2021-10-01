@@ -11,4 +11,6 @@ class RedmineProperties(
      * Project ids to meter.
      */
     val projects: List<Long> = emptyList(),
+
+    val users: List<Long> = emptyList(),
 )
