@@ -1,6 +1,7 @@
 package com.artemkaxboy.redmineexporter.entity
 
 import org.hibernate.Hibernate
+import org.springframework.stereotype.Component
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
