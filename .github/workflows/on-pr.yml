@@ -46,7 +46,7 @@ jobs:
         uses: JetBrains/qodana-action@v2.2.1-eap
         with:
           profile-name: kotlin.only
-          cache-dir: ~/.qodana/cache
+          cache-dir: /home/runner/work/red-exporter/red-exporter/.qodana/cache
 #
 ##        TODO add tests, test-coverage and uncomment the blocks
 ##        @SEE https://github.dev/artemkaxboy/SpringDataShowroom/tree/master/.github/workflows
