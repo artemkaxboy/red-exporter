@@ -8,9 +8,9 @@ on:
 
 jobs:
 
-  build-and-publish-release:
+  test-and-measure-coverage:
 
-    name: Build and publish release
+    name: Test and measure coverage
     runs-on: ubuntu-latest
     steps:
 
