@@ -11,7 +11,13 @@ class User(
     val id: Long = -1,
 
     val login: String,
+
+    private val firstname: String?,
+    private val lastname: String?,
 ) {
+
+    val name: String
+        get() = listOfNotNull(firstname, lastname).joinToString(" ")
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

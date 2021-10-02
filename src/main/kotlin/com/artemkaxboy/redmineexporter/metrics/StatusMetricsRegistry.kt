@@ -17,6 +17,7 @@ const val CLOSED_TAG = "closed"
 
 const val REDMINE_USER_ACTIVITIES = "redmine_user_activities"
 const val LOGIN_TAG = "login"
+const val NAME_TAG = "name"
 const val ACTIVITY_TAG = "activity"
 
 private val logger = KotlinLogging.logger {}
@@ -100,6 +101,7 @@ class StatusMetricsRegistry(
                 }
                 .tags(
                     LOGIN_TAG, addedUser.login,
+                    NAME_TAG, addedUser.name,
                     ACTIVITY_TAG, activity.name,
                 )
                 .register(meterRegistry)

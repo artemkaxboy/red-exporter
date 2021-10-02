@@ -61,7 +61,7 @@ class UserService(
             .sortedBy { it.id } // for better logs reading
             .forEach { addedUser ->
 
-                logger.info { "User added: (#${addedUser.id} ${addedUser.login})" }
+                logger.info { "User added: (#${addedUser.id} ${addedUser.name})" }
                 applicationEventPublisher.publishEvent(UserAddedEventListener.Event(user = addedUser))
             }
     }
