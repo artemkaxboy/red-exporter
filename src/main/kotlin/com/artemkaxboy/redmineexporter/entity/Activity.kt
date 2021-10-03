@@ -11,7 +11,7 @@ const val ACTIVE_IS_ACTIVE = 1
 
 @Entity
 @Table(name = "enumerations")
-class Activity (
+class Activity(
 
     @Id
     val id: Long = -1,
