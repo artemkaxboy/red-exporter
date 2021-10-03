@@ -1,5 +1,6 @@
 package com.artemkaxboy.redmineexporter.entity
 
+import com.artemkaxboy.redmineexporter.repository.STATUS_OPENED
 import org.hibernate.Hibernate
 import javax.persistence.*
 
@@ -37,3 +38,6 @@ class Version(
         return this::class.simpleName + "(id = $id , name = $name , project = $project , status = $status )"
     }
 }
+
+fun getVersion(id: Long = 1, name: String = "Version", projectId: Long = 1, project: Project? = null, status: String = STATUS_OPENED) =
+    Version(id, name = name, projectId = projectId, project = project, status = status)
