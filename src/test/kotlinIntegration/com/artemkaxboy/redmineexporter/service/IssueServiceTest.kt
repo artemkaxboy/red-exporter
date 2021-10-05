@@ -55,20 +55,48 @@ internal class IssueServiceTest {
     }
 
     @Test
-    fun getMetricByVersionIdAndStatusId() {
+    fun `returns 0 metrics for unknown statusId`() {
         val statusId1 = 101L
         val count1 = 5L
 
-        val statusId2 = 102L
-        val count2 = 6L
+        val unknownStatusId = 102L
+
+        generateIssues(statusId1, count1)
+        issueService.fetchMetrics(listOf(version))
+
+        Assertions.assertThat(issueService.getMetricByVersionIdAndStatusId(version.id, unknownStatusId)).isEqualTo(0)
+    }
+
+    @Test
+    fun `returns metrics for only one statusId`() {
+        val statusId1 = 101L
+        val count1 = 5L
+
+        generateIssues(statusId1, count1)
+        issueService.fetchMetrics(listOf(version))
+
+        Assertions.assertThat(issueService.getMetricByVersionIdAndStatusId(version.id, statusId1)).isEqualTo(count1)
+    }
+
+    @Test
+    fun `returns metrics for each of many statusId`() {
+        val statusId1 = 101L
+        val count1 = 5L
+
+        val statusId2 = statusId1 + 1
+        val count2 = count1 + 1
+
+        val statusId3 = statusId2 + 1
+        val count3 = count2 + 1
 
         generateIssues(statusId1, count1)
         generateIssues(statusId2, count2)
-
+        generateIssues(statusId3, count3)
         issueService.fetchMetrics(listOf(version))
 
         Assertions.assertThat(issueService.getMetricByVersionIdAndStatusId(version.id, statusId1)).isEqualTo(count1)
         Assertions.assertThat(issueService.getMetricByVersionIdAndStatusId(version.id, statusId2)).isEqualTo(count2)
+        Assertions.assertThat(issueService.getMetricByVersionIdAndStatusId(version.id, statusId3)).isEqualTo(count3)
     }
 
     @Test
@@ -99,9 +127,8 @@ internal class IssueServiceTest {
 
         generateIssues(statusId1, count1)
         issueService.fetchMetrics(listOf(version))
-        Assertions.assertThat(issueService.getMetricByVersionIdAndStatusId(version.id, statusId1)).isEqualTo(count1)
-
         generateIssues(statusId1, count1)
+
         Assertions.assertThat(issueService.getMetricByVersionIdAndStatusId(version.id, statusId1)).isEqualTo(count1)
     }
 
@@ -112,13 +139,23 @@ internal class IssueServiceTest {
 
         generateIssues(statusId1, count1)
         issueService.fetchMetrics(listOf(version))
-        Assertions.assertThat(issueService.getMetricByVersionIdAndStatusId(version.id, statusId1)).isEqualTo(count1)
-
         generateIssues(statusId1, count1)
         issueService.fetchMetrics(listOf(version))
+
         Assertions.assertThat(issueService.getMetricByVersionIdAndStatusId(version.id, statusId1)).isEqualTo(count1 * 2)
     }
 
+    @Test
+    fun `reset actually resets metrics`() {
+        val statusId1 = 101L
+        val count1 = 5L
+
+        generateIssues(statusId1, count1)
+        issueService.fetchMetrics(listOf(version))
+        issueService.reset()
+
+        Assertions.assertThat(issueService.getMetricByVersionIdAndStatusId(version.id, statusId1)).isEqualTo(0)
+    }
 
     fun generateIssues(statusId: Long, count: Long) {
         (1..count)
