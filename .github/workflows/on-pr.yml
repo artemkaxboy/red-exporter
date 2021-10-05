@@ -32,7 +32,6 @@ jobs:
         with:
           java-version: 15
 
-        # @SEE https://github.dev/artemkaxboy/SpringDataShowroom/tree/master/.github/workflows
       - name: Run check
         # @doc https://github.com/eskatos/gradle-command-action
         uses: eskatos/gradle-command-action@v1

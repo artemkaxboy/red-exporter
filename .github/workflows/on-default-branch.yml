@@ -40,24 +40,22 @@ jobs:
         with:
           java-version: 15
 
-#        TODO add tests, test-coverage and uncomment the blocks
-#        @SEE https://github.dev/artemkaxboy/SpringDataShowroom/tree/master/.github/workflows
-#      - name: Run check
+      - name: Run check
         # @doc https://github.com/eskatos/gradle-command-action
-#        uses: eskatos/gradle-command-action@v1
-#        with:
-#          arguments: check jacocoTestReport
+        uses: eskatos/gradle-command-action@v1
+        with:
+          arguments: check jacocoTestReport
 
-#      - uses: actions/upload-artifact@v2
-#        with:
-#          name: test-result
-#          path: ./build/reports/tests/test/
-#        if: always()
+      - uses: actions/upload-artifact@v2
+        with:
+          name: test-result
+          path: ./build/reports/tests/test/
+        if: always()
 
-#      - name: Upload coverage result
-#        env:
-#          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
-#        run: bash <(curl -Ls https://coverage.codacy.com/get.sh) report
+      - name: Upload coverage result
+        env:
+          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        run: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l Kotlin --force-language
 
       - name: Docker login
         env:
