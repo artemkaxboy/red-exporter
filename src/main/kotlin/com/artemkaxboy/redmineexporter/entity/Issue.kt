@@ -7,7 +7,7 @@ import javax.persistence.*
 @Table(name = "issues")
 class Issue(
 
-    @Id
+    @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
     val id: Long = -1,
 
     @Column(name = "tracker_id")
@@ -44,3 +44,21 @@ class Issue(
         return this::class.simpleName + "(id = $id , trackerId = $trackerId , projectId = $projectId , statusId = $statusId , priorityId = $priorityId , fixedVersionId = $fixedVersionId , authorId = $authorId )"
     }
 }
+
+fun makeIssue(
+    id: Long = 1,
+    trackerId: Long = 1,
+    projectId: Long = 1,
+    statusId: Long = 1,
+    priorityId: Long = 1,
+    fixedVersionId: Long = 1,
+    authorId: Long = 1,
+) = Issue(
+    id = id,
+    trackerId = trackerId,
+    projectId = projectId,
+    statusId = statusId,
+    priorityId = priorityId,
+    fixedVersionId = fixedVersionId,
+    authorId = authorId
+)

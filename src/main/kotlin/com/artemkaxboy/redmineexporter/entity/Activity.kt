@@ -1,10 +1,7 @@
 package com.artemkaxboy.redmineexporter.entity
 
 import org.hibernate.Hibernate
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import javax.persistence.*
 
 const val TIME_ENTRY_ACTIVITY = "TimeEntryActivity"
 const val ACTIVE_IS_ACTIVE = 1
@@ -13,7 +10,7 @@ const val ACTIVE_IS_ACTIVE = 1
 @Table(name = "enumerations")
 class Activity (
 
-    @Id
+    @Id @GeneratedValue(strategy= GenerationType.IDENTITY)
     val id: Long = -1,
 
     val name: String,

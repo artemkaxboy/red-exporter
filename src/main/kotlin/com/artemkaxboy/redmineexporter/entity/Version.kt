@@ -8,7 +8,7 @@ import javax.persistence.*
 @Table(name = "versions")
 class Version(
 
-    @Id
+    @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
     val id: Long = -1,
 
     val name: String,
@@ -39,5 +39,11 @@ class Version(
     }
 }
 
-fun getVersion(id: Long = 1, name: String = "Version", projectId: Long = 1, project: Project? = null, status: String = STATUS_OPENED) =
+fun makeVersion(
+    id: Long = 1,
+    name: String = "Version Name",
+    projectId: Long = 1,
+    project: Project? = null,
+    status: String = STATUS_OPENED
+) =
     Version(id, name = name, projectId = projectId, project = project, status = status)

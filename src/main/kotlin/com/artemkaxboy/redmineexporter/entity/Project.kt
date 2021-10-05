@@ -1,15 +1,13 @@
 package com.artemkaxboy.redmineexporter.entity
 
 import org.hibernate.Hibernate
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
 @Table(name = "projects")
 class Project(
 
-    @Id
+    @Id @GeneratedValue(strategy= GenerationType.IDENTITY)
     val id: Long = -1,
 
     val name: String,
@@ -30,3 +28,5 @@ class Project(
         return this::class.simpleName + "(id = $id , name = $name )"
     }
 }
+
+fun makeProject(id: Long = 1, name: String = "Project Name") = Project(id = id, name = name)
