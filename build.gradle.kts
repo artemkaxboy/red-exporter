@@ -28,6 +28,14 @@ group = "com.artemkaxboy"
 version = project.property("applicationVersion") as String
 java.sourceCompatibility = JavaVersion.VERSION_15
 
+sourceSets {
+    test {
+        java {
+            srcDirs("src/test/kotlin", "src/test/kotlinIntegration")
+        }
+    }
+}
+
 repositories {
     mavenCentral()
 }
@@ -50,7 +58,6 @@ dependencies {
 //	DB
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     runtimeOnly("mysql:mysql-connector-java")
-    testRuntimeOnly("com.h2database:h2")
 
 //	Logging
     implementation("io.github.microutils:kotlin-logging:1.12.5")
@@ -65,6 +72,9 @@ dependencies {
     kapt("org.hibernate:hibernate-jpamodelgen:5.5.7.Final")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.testcontainers:testcontainers:1.16.0")
+    testImplementation("org.testcontainers:junit-jupiter:1.16.0")
+    testImplementation("org.testcontainers:mysql:1.16.0")
 }
 
 tasks {

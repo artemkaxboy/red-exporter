@@ -1,13 +1,15 @@
 package com.artemkaxboy.redmineexporter.entity
 
+import com.artemkaxboy.redmineexporter.repository.STATUS_OPENED
 import org.hibernate.Hibernate
+import org.jetbrains.annotations.TestOnly
 import javax.persistence.*
 
 @Entity
 @Table(name = "versions")
 class Version(
 
-    @Id
+    @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
     val id: Long = -1,
 
     val name: String,
@@ -37,3 +39,16 @@ class Version(
         return this::class.simpleName + "(id = $id , name = $name , project = $project , status = $status )"
     }
 }
+
+/**
+ * Makes entity with fake defaults.
+ */
+@TestOnly
+fun makeVersion(
+    id: Long = 1,
+    name: String = "Version Name",
+    projectId: Long = 1,
+    project: Project? = null,
+    status: String = STATUS_OPENED
+) =
+    Version(id, name = name, projectId = projectId, project = project, status = status)

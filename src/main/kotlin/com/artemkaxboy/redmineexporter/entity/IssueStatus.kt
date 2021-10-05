@@ -1,16 +1,13 @@
 package com.artemkaxboy.redmineexporter.entity
 
 import org.hibernate.Hibernate
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
 @Table(name = "issue_statuses")
 class IssueStatus(
 
-    @Id
+    @Id @GeneratedValue(strategy= GenerationType.IDENTITY)
     val id: Long = -1,
 
     val name: String,

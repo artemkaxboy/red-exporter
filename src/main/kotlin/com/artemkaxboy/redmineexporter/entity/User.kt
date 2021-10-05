@@ -7,7 +7,7 @@ import javax.persistence.*
 @Table(name = "users")
 class User(
 
-    @Id
+    @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
     val id: Long = -1,
 
     val login: String,
