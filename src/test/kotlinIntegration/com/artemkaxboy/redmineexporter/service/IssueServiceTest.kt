@@ -9,18 +9,17 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
-import org.testcontainers.junit.jupiter.Testcontainers
 import utils.MysqlContainer
 
 
 @SpringBootTest
 @RunWith(SpringRunner::class)
-//@TestPropertySource(locations = ["classpath:application-integrationtest.properties"])
+@TestPropertySource(locations = ["classpath:application-integrationtest.properties"])
 //@Testcontainers
-internal class IssueServiceTest() {
+internal class IssueServiceTest {
 
     @ClassRule
-    val mysqlSQLContainer = MysqlContainer.getInstance()
+    val mysqlSQLContainer = MysqlContainer.instance
 
     @Autowired
     lateinit var issueService: IssueService
