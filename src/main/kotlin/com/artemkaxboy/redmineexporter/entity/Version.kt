@@ -2,6 +2,7 @@ package com.artemkaxboy.redmineexporter.entity
 
 import com.artemkaxboy.redmineexporter.repository.STATUS_OPENED
 import org.hibernate.Hibernate
+import org.jetbrains.annotations.TestOnly
 import javax.persistence.*
 
 @Entity
@@ -39,6 +40,10 @@ class Version(
     }
 }
 
+/**
+ * Makes entity with fake defaults.
+ */
+@TestOnly
 fun makeVersion(
     id: Long = 1,
     name: String = "Version Name",

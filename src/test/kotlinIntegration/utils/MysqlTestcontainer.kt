@@ -5,6 +5,12 @@ import org.testcontainers.containers.MySQLContainer
 const val MYSQL_IMAGE = "mysql:8"
 const val DEFAULT_MYSQL_PORT = 3306
 
+/**
+ * Class to create shared instance of testcontainer.
+ *
+ * **See Also:** [Baeldung: Shared Database Instance]
+ * (https://www.baeldung.com/spring-boot-testcontainers-integration-test#common-configuration)
+ */
 class MysqlContainer private constructor() : MySQLContainer<MysqlContainer>(MYSQL_IMAGE) {
 
     override fun start() {

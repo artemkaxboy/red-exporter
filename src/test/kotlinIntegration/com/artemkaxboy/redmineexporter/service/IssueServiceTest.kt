@@ -24,7 +24,6 @@ import utils.MysqlContainer
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class IssueServiceTest {
 
-    // https://www.baeldung.com/spring-boot-testcontainers-integration-test#common-configuration
     @ClassRule
     val mysqlSQLContainer = MysqlContainer.instance
 

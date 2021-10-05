@@ -1,6 +1,7 @@
 package com.artemkaxboy.redmineexporter.entity
 
 import org.hibernate.Hibernate
+import org.jetbrains.annotations.TestOnly
 import javax.persistence.*
 
 @Entity
@@ -29,4 +30,8 @@ class Project(
     }
 }
 
+/**
+ * Makes entity with fake defaults.
+ */
+@TestOnly
 fun makeProject(id: Long = 1, name: String = "Project Name") = Project(id = id, name = name)
