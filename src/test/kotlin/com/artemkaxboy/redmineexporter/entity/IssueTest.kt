@@ -6,6 +6,7 @@ import kotlin.reflect.full.memberProperties
 
 internal class IssueTest {
 
+    // TODO check all entities with reflection
     @Test
     fun testToString() {
 
@@ -17,5 +18,11 @@ internal class IssueTest {
                     Assertions.assertThat(versionString).containsIgnoringCase(it.name)
             }
         }
+    }
+
+    @Test
+    fun testHashCode() {
+
+        Assertions.assertThat(makeIssue().hashCode()).isEqualTo(0)
     }
 }
