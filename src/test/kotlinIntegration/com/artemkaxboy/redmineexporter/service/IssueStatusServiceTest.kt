@@ -13,7 +13,6 @@ import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import utils.MysqlContainer
 
-
 @SpringBootTest
 @RunWith(SpringRunner::class)
 @TestPropertySource(locations = ["classpath:application-integrationtest.properties"])

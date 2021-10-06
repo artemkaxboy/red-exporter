@@ -36,7 +36,7 @@ class Version(
 
     @Override
     override fun toString(): String {
-        return this::class.simpleName + "(id = $id , name = $name , project = $project , status = $status )"
+        return this::class.simpleName + "(id = $id , name = $name , projectId = $projectId , status = $status )"
     }
 }
 
