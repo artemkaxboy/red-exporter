@@ -51,6 +51,7 @@ class Issue(
          * Makes entity with fake defaults.
          */
         @TestOnly
+        @JvmOverloads
         fun make(
             id: Long = 1,
             trackerId: Long = 1,
@@ -68,28 +69,5 @@ class Issue(
             fixedVersionId = fixedVersionId,
             authorId = authorId
         )
-
     }
 }
-
-/**
- * Makes entity with fake defaults.
- */
-@TestOnly
-fun makeIssue(
-    id: Long = 1,
-    trackerId: Long = 1,
-    projectId: Long = 1,
-    statusId: Long = 1,
-    priorityId: Long = 1,
-    fixedVersionId: Long = 1,
-    authorId: Long = 1,
-) = Issue(
-    id = id,
-    trackerId = trackerId,
-    projectId = projectId,
-    statusId = statusId,
-    priorityId = priorityId,
-    fixedVersionId = fixedVersionId,
-    authorId = authorId
-)

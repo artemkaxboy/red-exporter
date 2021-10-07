@@ -1,6 +1,7 @@
 package com.artemkaxboy.redmineexporter.entity
 
 import org.hibernate.Hibernate
+import org.jetbrains.annotations.TestOnly
 import javax.persistence.*
 
 const val TIME_ENTRY_ACTIVITY = "TimeEntryActivity"
@@ -10,7 +11,7 @@ const val ACTIVE_IS_ACTIVE = 1
 @Table(name = "enumerations")
 class Activity(
 
-    @Id @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = -1,
 
     val name: String,
@@ -38,5 +39,23 @@ class Activity(
     @Override
     override fun toString(): String {
         return this::class.simpleName + "(id = $id , name = $name , position = $position , type = $type , active = $active , projectId = $projectId )"
+    }
+
+    companion object {
+
+        /**
+         * Makes entity with fake defaults.
+         */
+        @TestOnly
+        @JvmOverloads
+        fun make(
+            id: Long = 1,
+            name: String = "Activity Name",
+            position: Int = id.toInt(),
+            type: String = TIME_ENTRY_ACTIVITY,
+            active: Int = 1,
+            projectId: Long? = 1,
+        ) =
+            Activity(id = id, name = name, position = position, type = type, active = active, projectId = projectId)
     }
 }

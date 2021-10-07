@@ -33,20 +33,24 @@ class IssueStatus(
     override fun toString(): String {
         return this::class.simpleName + "(id = $id , name = $name , isClosed = $isClosed , position = $position )"
     }
-}
 
-/**
- * Makes entity with fake defaults.
- */
-@TestOnly
-fun makeIssueStatus(
-    id: Long = 1,
-    name: String = "Issue Status",
-    isClosed: Int = 0,
-    position: Int = id.toInt(),
-) = IssueStatus(
-    id = id,
-    name = name,
-    isClosed = isClosed,
-    position = position,
-)
+    companion object {
+
+        /**
+         * Makes entity with fake defaults.
+         */
+        @TestOnly
+        @JvmOverloads
+        fun make(
+            id: Long = 1,
+            name: String = "Issue Status",
+            isClosed: Int = 0,
+            position: Int = id.toInt(),
+        ) = IssueStatus(
+            id = id,
+            name = name,
+            isClosed = isClosed,
+            position = position,
+        )
+    }
+}

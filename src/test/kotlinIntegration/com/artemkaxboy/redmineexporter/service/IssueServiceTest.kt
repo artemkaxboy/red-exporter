@@ -1,6 +1,9 @@
 package com.artemkaxboy.redmineexporter.service
 
-import com.artemkaxboy.redmineexporter.entity.*
+import com.artemkaxboy.redmineexporter.entity.Issue
+import com.artemkaxboy.redmineexporter.entity.Project
+import com.artemkaxboy.redmineexporter.entity.Version
+import com.artemkaxboy.redmineexporter.entity.makeVersion
 import com.artemkaxboy.redmineexporter.repository.IssueRepository
 import com.artemkaxboy.redmineexporter.repository.ProjectRepository
 import com.artemkaxboy.redmineexporter.repository.VersionRepository
@@ -12,12 +15,10 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 
 @SpringBootTest
 @RunWith(SpringRunner::class)
-@TestPropertySource(locations = ["classpath:application-integrationtest.properties"])
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class IssueServiceTest {
 
@@ -38,7 +39,7 @@ internal class IssueServiceTest {
 
     @BeforeAll
     fun initDb() {
-        project = projectRepository.save(makeProject(id = -1, name = "Main Project"))
+        project = projectRepository.save(Project.make(id = -1, name = "Main Project"))
         version = versionRepository.save(makeVersion(id = -1, name = "Wishlist", projectId = project.id))
     }
 

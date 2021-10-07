@@ -1,6 +1,7 @@
 package com.artemkaxboy.redmineexporter.service
 
-import com.artemkaxboy.redmineexporter.entity.makeIssueStatus
+import com.artemkaxboy.redmineexporter.entity.IssueStatus
+import com.artemkaxboy.redmineexporter.entity.Project
 import com.artemkaxboy.redmineexporter.repository.IssueStatusRepository
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.AfterEach
@@ -13,7 +14,6 @@ import org.springframework.test.context.junit4.SpringRunner
 
 @SpringBootTest
 @RunWith(SpringRunner::class)
-@TestPropertySource(locations = ["classpath:application-integrationtest.properties"])
 internal class IssueStatusServiceTest {
 
     @Autowired
@@ -23,10 +23,10 @@ internal class IssueStatusServiceTest {
     lateinit var issueStatusService: IssueStatusService
 
     val testStatuses = listOf(
-        makeIssueStatus(id = 1, name = "New"),
-        makeIssueStatus(id = 2, name = "In Progress"),
-        makeIssueStatus(id = 3, name = "Re-Opened"),
-        makeIssueStatus(id = 4, name = "Closed", isClosed = 1)
+        IssueStatus.make(id = 1, name = "New"),
+        IssueStatus.make(id = 2, name = "In Progress"),
+        IssueStatus.make(id = 3, name = "Re-Opened"),
+        IssueStatus.make(id = 4, name = "Closed", isClosed = 1)
     )
 
     @AfterEach

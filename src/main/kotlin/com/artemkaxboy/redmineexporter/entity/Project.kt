@@ -28,10 +28,14 @@ class Project(
     override fun toString(): String {
         return this::class.simpleName + "(id = $id , name = $name )"
     }
-}
 
-/**
- * Makes entity with fake defaults.
- */
-@TestOnly
-fun makeProject(id: Long = 1, name: String = "Project Name") = Project(id = id, name = name)
+    companion object {
+
+        /**
+         * Makes entity with fake defaults.
+         */
+        @TestOnly
+        @JvmOverloads
+        fun make(id: Long = 1, name: String = "Project Name") = Project(id = id, name = name)
+    }
+}
