@@ -56,16 +56,3 @@ class Version(
             Version(id = id, name = name, projectId = projectId, project = project, status = status)
     }
 }
-
-/**
- * Makes entity with fake defaults.
- */
-@TestOnly
-fun makeVersion(
-    id: Long = 1,
-    name: String = "Version Name",
-    projectId: Long = 1,
-    project: Project? = null,
-    status: String = STATUS_OPENED
-) =
-    Version(id, name = name, projectId = projectId, project = project, status = status)

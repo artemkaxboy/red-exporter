@@ -3,7 +3,6 @@ package com.artemkaxboy.redmineexporter.service
 import com.artemkaxboy.redmineexporter.entity.Issue
 import com.artemkaxboy.redmineexporter.entity.Project
 import com.artemkaxboy.redmineexporter.entity.Version
-import com.artemkaxboy.redmineexporter.entity.makeVersion
 import com.artemkaxboy.redmineexporter.repository.IssueRepository
 import com.artemkaxboy.redmineexporter.repository.ProjectRepository
 import com.artemkaxboy.redmineexporter.repository.VersionRepository
@@ -40,7 +39,7 @@ internal class IssueServiceTest {
     @BeforeAll
     fun initDb() {
         project = projectRepository.save(Project.make(id = -1, name = "Main Project"))
-        version = versionRepository.save(makeVersion(id = -1, name = "Wishlist", projectId = project.id))
+        version = versionRepository.save(Version.make(id = -1, name = "Wishlist", projectId = project.id))
     }
 
     @AfterEach
