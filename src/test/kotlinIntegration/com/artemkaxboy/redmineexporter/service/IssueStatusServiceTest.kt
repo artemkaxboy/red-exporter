@@ -1,7 +1,6 @@
 package com.artemkaxboy.redmineexporter.service
 
 import com.artemkaxboy.redmineexporter.entity.IssueStatus
-import com.artemkaxboy.redmineexporter.entity.Project
 import com.artemkaxboy.redmineexporter.repository.IssueStatusRepository
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.AfterEach
@@ -9,7 +8,6 @@ import org.junit.jupiter.api.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 
 @SpringBootTest
