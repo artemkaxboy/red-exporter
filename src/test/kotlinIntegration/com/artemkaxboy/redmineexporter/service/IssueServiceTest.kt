@@ -5,7 +5,6 @@ import com.artemkaxboy.redmineexporter.repository.IssueRepository
 import com.artemkaxboy.redmineexporter.repository.ProjectRepository
 import com.artemkaxboy.redmineexporter.repository.VersionRepository
 import org.assertj.core.api.Assertions
-import org.junit.ClassRule
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -15,16 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
-import utils.MysqlContainer
 
 @SpringBootTest
 @RunWith(SpringRunner::class)
 @TestPropertySource(locations = ["classpath:application-integrationtest.properties"])
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class IssueServiceTest {
-
-    @ClassRule
-    val mysqlSQLContainer = MysqlContainer.instance
 
     @Autowired
     lateinit var projectRepository: ProjectRepository
@@ -159,7 +154,7 @@ internal class IssueServiceTest {
     fun generateIssues(statusId: Long, count: Long) {
         (1..count)
             .map {
-                makeIssue(
+                Issue.make(
                     id = -1,
                     projectId = project.id,
                     fixedVersionId = version.id,
