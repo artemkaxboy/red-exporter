@@ -19,23 +19,44 @@ internal class ReflectionTests {
     private fun checkEntity(clazz: KClass<*>) {
 
         println("Testing entity class: ${clazz.qualifiedName}")
-        val instance = clazz.companionObject?.java?.getMethod(MAKE_FUN_NAME)?.invoke(clazz.companionObjectInstance)
-        Assertions.assertThat(instance).isNotNull
 
-        val toStringResult = clazz.functions.find { it.name == TO_STRING_FUN_NAME }?.call(instance)?.toString()
+        val instance = makeInstance(clazz)
+        Assertions.assertThat(instance).isNotNull
+        instance!!
+
+        `toString contains all primitive properties`(clazz, instance)
+        `hashCode always returns 0`(instance)
+        `equals overrode`(clazz, instance)
+    }
+
+    private fun `equals overrode`(clazz: KClass<*>, instance: Any) {
+        Assertions.assertThat(instance).isEqualTo(makeInstance(clazz))
+    }
+
+    private fun `hashCode always returns 0`(instance: Any?) {
+        Assertions.assertThat(instance).hasSameHashCodeAs(0)
+    }
+
+    private fun `toString contains all primitive properties`(clazz: KClass<*>, instance: Any) {
+
+        val toStringResult = toString(clazz, instance)
         Assertions.assertThat(toStringResult).isNotNull
 
         clazz.memberProperties.forEach {
             when (it.returnType.classifier) {
                 Long::class, String::class, Int::class, Double::class, Float::class, Char::class ->
-                    Assertions.assertThat(toStringResult).containsIgnoringCase(it.name)
+                    Assertions.assertThat(toStringResult).containsIgnoringCase("${it.name} = ")
                 else ->
                     println("Skipped: ${clazz.simpleName}.${it.name}: [${it.returnType.classifier}]")
             }
         }
-
-        Assertions.assertThat(instance).hasSameHashCodeAs(0)
     }
+
+    private fun toString(clazz: KClass<*>, instance: Any) =
+        clazz.functions.find { it.name == TO_STRING_FUN_NAME }?.call(instance)?.toString()
+
+    private fun makeInstance(clazz: KClass<*>) =
+        clazz.companionObject?.java?.getMethod(MAKE_FUN_NAME)?.invoke(clazz.companionObjectInstance)
 
     @Test
     fun allAnnotated() {
