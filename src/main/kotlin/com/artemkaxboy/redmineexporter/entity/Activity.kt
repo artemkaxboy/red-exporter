@@ -6,6 +6,7 @@ import javax.persistence.*
 
 const val TIME_ENTRY_ACTIVITY = "TimeEntryActivity"
 const val ACTIVE_IS_ACTIVE = 1
+const val ACTIVE_IS_INACTIVE = 0
 
 @Entity
 @Table(name = "enumerations")
@@ -53,8 +54,8 @@ class Activity(
             name: String = "Activity Name",
             position: Int = id.toInt(),
             type: String = TIME_ENTRY_ACTIVITY,
-            active: Int = 1,
-            projectId: Long? = 1,
+            active: Int = ACTIVE_IS_ACTIVE,
+            projectId: Long? = null,
         ) =
             Activity(id = id, name = name, position = position, type = type, active = active, projectId = projectId)
     }

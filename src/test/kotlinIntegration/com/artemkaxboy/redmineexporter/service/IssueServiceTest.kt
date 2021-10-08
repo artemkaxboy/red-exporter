@@ -7,10 +7,7 @@ import com.artemkaxboy.redmineexporter.repository.IssueRepository
 import com.artemkaxboy.redmineexporter.repository.ProjectRepository
 import com.artemkaxboy.redmineexporter.repository.VersionRepository
 import org.assertj.core.api.Assertions
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.*
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -40,6 +37,12 @@ internal class IssueServiceTest {
     fun initDb() {
         project = projectRepository.save(Project.make(id = -1, name = "Main Project"))
         version = versionRepository.save(Version.make(id = -1, name = "Wishlist", projectId = project.id))
+    }
+
+    @AfterAll
+    fun cleanDb() {
+        versionRepository.deleteAllInBatch()
+        projectRepository.deleteAllInBatch()
     }
 
     @AfterEach

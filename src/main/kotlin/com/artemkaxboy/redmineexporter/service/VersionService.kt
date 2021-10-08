@@ -6,6 +6,7 @@ import com.artemkaxboy.redmineexporter.metrics.VersionClosedEventListener
 import com.artemkaxboy.redmineexporter.metrics.VersionOpenedEventListener
 import com.artemkaxboy.redmineexporter.repository.VersionRepository
 import mu.KotlinLogging
+import org.jetbrains.annotations.TestOnly
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 
@@ -25,7 +26,7 @@ class VersionService(
     /**
      * Fetches all opened versions for all project ids listed in properties.
      */
-    fun fetchVersions() {
+    fun fetchVersionsForPreconfiguredProjects() {
 
         fetchVersionsForProjects(redmineProperties.projects)
     }
@@ -81,4 +82,13 @@ class VersionService(
                 applicationEventPublisher.publishEvent(VersionOpenedEventListener.Event(version = openedVersion))
             }
     }
+
+    /**
+     * Resets all fetched metrics.
+     */
+    @TestOnly
+    fun reset() {
+        openedVersionsByProject = emptyMap()
+    }
+
 }

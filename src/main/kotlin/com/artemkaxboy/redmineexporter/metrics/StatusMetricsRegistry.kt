@@ -56,7 +56,7 @@ class StatusMetricsRegistry(
     }
 
     private fun fetchDynamicData() {
-        versionService.fetchVersions()
+        versionService.fetchVersionsForPreconfiguredProjects()
         userService.fetchAllUsers()
         issueService.fetchMetrics(versionService.getAllVersions())
         timeEntryService.fetchMetrics(userService.getAllUsers())
