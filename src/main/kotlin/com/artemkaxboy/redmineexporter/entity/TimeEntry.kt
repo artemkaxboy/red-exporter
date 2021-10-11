@@ -49,7 +49,7 @@ class TimeEntry(
         @TestOnly
         @JvmOverloads
         fun make(
-            id: Long = 1,
+            id: Long = -1,
             userId: Long = 1,
             hours: Double = 1.0,
             activityId: Long = 1,

@@ -50,7 +50,7 @@ class Activity(
         @TestOnly
         @JvmOverloads
         fun make(
-            id: Long = 1,
+            id: Long = -1,
             name: String = "Activity Name",
             position: Int = id.toInt(),
             type: String = TIME_ENTRY_ACTIVITY,

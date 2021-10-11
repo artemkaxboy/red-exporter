@@ -22,10 +22,10 @@ internal class ActivityServiceTest {
     lateinit var activityService: ActivityService
 
     val testActivities = listOf(
-        Activity.make(id = 1, name = "Analysis"),
-        Activity.make(id = 2, name = "Code"),
-        Activity.make(id = 3, name = "Code Review"),
-        Activity.make(id = 4, name = "Test")
+        Activity.make(name = "Analysis"),
+        Activity.make(name = "Code"),
+        Activity.make(name = "Code Review"),
+        Activity.make(name = "Test")
     )
 
     @AfterEach

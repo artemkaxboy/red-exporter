@@ -53,7 +53,7 @@ class Issue(
         @TestOnly
         @JvmOverloads
         fun make(
-            id: Long = 1,
+            id: Long = -1,
             trackerId: Long = 1,
             projectId: Long = 1,
             statusId: Long = 1,

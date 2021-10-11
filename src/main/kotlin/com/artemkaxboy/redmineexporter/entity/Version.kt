@@ -47,7 +47,7 @@ class Version(
         @TestOnly
         @JvmOverloads
         fun make(
-            id: Long = 1,
+            id: Long = -1,
             name: String = "Main Project",
             projectId: Long = 1,
             project: Project? = null,

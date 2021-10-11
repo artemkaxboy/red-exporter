@@ -21,10 +21,10 @@ internal class IssueStatusServiceTest {
     lateinit var issueStatusService: IssueStatusService
 
     val testStatuses = listOf(
-        IssueStatus.make(id = 1, name = "New"),
-        IssueStatus.make(id = 2, name = "In Progress"),
-        IssueStatus.make(id = 3, name = "Re-Opened"),
-        IssueStatus.make(id = 4, name = "Closed", isClosed = 1)
+        IssueStatus.make(name = "New"),
+        IssueStatus.make(name = "In Progress"),
+        IssueStatus.make(name = "Re-Opened"),
+        IssueStatus.make(name = "Closed", isClosed = 1)
     )
 
     @AfterEach

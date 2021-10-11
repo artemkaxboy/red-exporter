@@ -35,8 +35,8 @@ internal class IssueServiceTest {
 
     @BeforeAll
     fun initDb() {
-        project = projectRepository.save(Project.make(id = -1, name = "Main Project"))
-        version = versionRepository.save(Version.make(id = -1, name = "Wishlist", projectId = project.id))
+        project = projectRepository.save(Project.make(name = "Main Project"))
+        version = versionRepository.save(Version.make(name = "Wishlist", projectId = project.id))
     }
 
     @AfterAll
@@ -158,10 +158,9 @@ internal class IssueServiceTest {
         (1..count)
             .map {
                 Issue.make(
-                    id = -1,
                     projectId = project.id,
                     fixedVersionId = version.id,
-                    statusId = statusId
+                    statusId = statusId,
                 )
             }
             .also { issueRepository.saveAll(it) }

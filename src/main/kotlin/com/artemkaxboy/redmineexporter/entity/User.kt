@@ -43,7 +43,7 @@ class User(
         @TestOnly
         @JvmOverloads
         fun make(
-            id: Long = 1,
+            id: Long = -1,
             login: String = "login",
             firstname: String? = "John",
             lastname: String? = "Smith",

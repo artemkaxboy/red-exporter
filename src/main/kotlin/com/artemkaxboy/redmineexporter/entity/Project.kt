@@ -36,6 +36,6 @@ class Project(
          */
         @TestOnly
         @JvmOverloads
-        fun make(id: Long = 1, name: String = "Project Name") = Project(id = id, name = name)
+        fun make(id: Long = -1, name: String = "Project Name") = Project(id = id, name = name)
     }
 }

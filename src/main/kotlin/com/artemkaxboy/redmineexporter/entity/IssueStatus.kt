@@ -42,7 +42,7 @@ class IssueStatus(
         @TestOnly
         @JvmOverloads
         fun make(
-            id: Long = 1,
+            id: Long = -1,
             name: String = "Issue Status",
             isClosed: Int = 0,
             position: Int = id.toInt(),

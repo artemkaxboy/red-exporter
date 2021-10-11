@@ -1,9 +1,15 @@
 package com.artemkaxboy.redmineexporter.service
 
+import com.artemkaxboy.redmineexporter.config.properties.RedmineProperties
 import com.artemkaxboy.redmineexporter.entity.Project
 import com.artemkaxboy.redmineexporter.entity.Version
+import com.artemkaxboy.redmineexporter.metrics.StatusMetricsRegistry
 import com.artemkaxboy.redmineexporter.repository.ProjectRepository
 import com.artemkaxboy.redmineexporter.repository.VersionRepository
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
+import io.mockk.justRun
+import io.mockk.verify
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.*
 import org.junit.runner.RunWith
@@ -11,9 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 
-const val TEST_PROJECT_ID = 17L
-
-@SpringBootTest(properties = ["redmine.projects=${TEST_PROJECT_ID}"])
+@SpringBootTest
 @RunWith(SpringRunner::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class VersionServiceTest {
@@ -27,18 +31,25 @@ internal class VersionServiceTest {
     @Autowired
     lateinit var versionService: VersionService
 
+    @MockkBean
+    lateinit var redmineProperties: RedmineProperties
+
+    @MockkBean
+    lateinit var statusMetricsRegistry: StatusMetricsRegistry
+
     lateinit var project: Project
 
-    val testVersions = listOf(
-        Version.make(id = 1, name = "v0.1", projectId = TEST_PROJECT_ID),
-        Version.make(id = 2, name = "v0.2", projectId = TEST_PROJECT_ID),
-        Version.make(id = 3, name = "v0.2.1", projectId = TEST_PROJECT_ID),
-        Version.make(id = 4, name = "v1.0", projectId = TEST_PROJECT_ID)
-    )
+    lateinit var testVersions: List<Version>
 
     @BeforeAll
     fun initDb() {
-        project = projectRepository.save(Project.make(id = TEST_PROJECT_ID, name = "Main Project"))
+        project = projectRepository.save(Project.make(name = "Main Project"))
+        testVersions = listOf(
+            Version.make(name = "v0.1", projectId = project.id),
+            Version.make(name = "v0.2", projectId = project.id),
+            Version.make(name = "v0.2.1", projectId = project.id),
+            Version.make(name = "v1.0", projectId = project.id)
+        )
     }
 
     @AfterAll
@@ -62,7 +73,21 @@ internal class VersionServiceTest {
     }
 
     @Test
-    fun `returns all statuses after fetch`() {
+    fun `calls versionOpened on fetching versions`() {
+
+        every { redmineProperties.projects } returns listOf(project.id)
+        justRun { statusMetricsRegistry.versionOpened(any()) }
+
+        versionRepository.saveAll(testVersions)
+        versionService.fetchVersionsForPreconfiguredProjects()
+        verify(exactly = testVersions.size) { statusMetricsRegistry.versionOpened(any()) }
+    }
+
+    @Test
+    fun `returns all versions after fetch`() {
+
+        every { redmineProperties.projects } returns listOf(project.id)
+        justRun { statusMetricsRegistry.versionOpened(any()) }
 
         val expected = versionRepository.saveAll(testVersions)
         versionService.fetchVersionsForPreconfiguredProjects()
@@ -74,7 +99,11 @@ internal class VersionServiceTest {
     @Test
     fun `clears all statuses by reset`() {
 
+        every { redmineProperties.projects } returns listOf(project.id)
+        justRun { statusMetricsRegistry.versionOpened(any()) }
+
         versionRepository.saveAll(testVersions)
+
         versionService.fetchVersionsForPreconfiguredProjects()
         versionService.reset()
 

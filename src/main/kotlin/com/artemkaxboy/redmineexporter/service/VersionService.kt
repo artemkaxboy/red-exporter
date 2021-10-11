@@ -2,8 +2,8 @@ package com.artemkaxboy.redmineexporter.service
 
 import com.artemkaxboy.redmineexporter.config.properties.RedmineProperties
 import com.artemkaxboy.redmineexporter.entity.Version
-import com.artemkaxboy.redmineexporter.metrics.VersionClosedEventListener
-import com.artemkaxboy.redmineexporter.metrics.VersionOpenedEventListener
+import com.artemkaxboy.redmineexporter.metrics.VersionClosedEvent
+import com.artemkaxboy.redmineexporter.metrics.VersionOpenedEvent
 import com.artemkaxboy.redmineexporter.repository.VersionRepository
 import mu.KotlinLogging
 import org.jetbrains.annotations.TestOnly
@@ -65,7 +65,7 @@ class VersionService(
                             "project (#${closedVersion.projectId} ${closedVersion.project?.name}) " +
                             "version (#${closedVersion.id} ${closedVersion.name})"
                 }
-                applicationEventPublisher.publishEvent(VersionClosedEventListener.Event(version = closedVersion))
+                applicationEventPublisher.publishEvent(VersionClosedEvent(version = closedVersion))
             }
     }
 
@@ -79,7 +79,7 @@ class VersionService(
                             "project (#${openedVersion.projectId} ${openedVersion.project?.name}) " +
                             "version (#${openedVersion.id} ${openedVersion.name})"
                 }
-                applicationEventPublisher.publishEvent(VersionOpenedEventListener.Event(version = openedVersion))
+                applicationEventPublisher.publishEvent(VersionOpenedEvent(version = openedVersion))
             }
     }
 
