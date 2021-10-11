@@ -73,7 +73,7 @@ internal class VersionServiceTest {
     }
 
     @Test
-    fun `calls versionOpened on fetching versions`() {
+    fun `notifies registry on fetching new versions`() {
 
         every { redmineProperties.projects } returns listOf(project.id)
         justRun { statusMetricsRegistry.versionOpened(any()) }
@@ -97,6 +97,36 @@ internal class VersionServiceTest {
     }
 
     @Test
+    fun `notifies registry on closing one versions`() {
+
+        every { redmineProperties.projects } returns listOf(project.id)
+        justRun { statusMetricsRegistry.versionOpened(any()) }
+        justRun { statusMetricsRegistry.versionClosed(any()) }
+
+        val saved = versionRepository.saveAll(testVersions)
+        versionService.fetchVersionsForPreconfiguredProjects()
+
+        versionRepository.delete(saved.first())
+        versionService.fetchVersionsForPreconfiguredProjects()
+        verify(exactly = 1) { statusMetricsRegistry.versionClosed(any()) }
+    }
+
+    @Test @Disabled("Must fix") // TODO closing all versions of project doesn't call version closed
+    fun `notifies registry on closing all versions`() {
+
+        every { redmineProperties.projects } returns listOf(project.id)
+        justRun { statusMetricsRegistry.versionOpened(any()) }
+        justRun { statusMetricsRegistry.versionClosed(any()) }
+
+        val saved = versionRepository.saveAll(testVersions)
+        versionService.fetchVersionsForPreconfiguredProjects()
+
+        versionRepository.deleteAllById(saved.map { it.id })
+        versionService.fetchVersionsForPreconfiguredProjects()
+        verify(exactly = 4) { statusMetricsRegistry.versionClosed(any()) }
+    }
+
+    @Test
     fun `clears all statuses by reset`() {
 
         every { redmineProperties.projects } returns listOf(project.id)
@@ -110,122 +140,4 @@ internal class VersionServiceTest {
         val got = versionService.getAllVersions()
         Assertions.assertThat(got).isEmpty()
     }
-
-// TODO
-//    @Test
-//    fun `returns 0 metrics for unknown statusId`() {
-//        val statusId1 = 101L
-//        val count1 = 5L
-//
-//        val unknownStatusId = 102L
-//
-//        generateIssues(statusId1, count1)
-//        versionService.fetchMetrics(listOf(version))
-//
-//        Assertions.assertThat(versionService.getMetricByVersionIdAndStatusId(version.id, unknownStatusId)).isEqualTo(0)
-//    }
-//
-//    @Test
-//    fun `returns metrics for only one statusId`() {
-//        val statusId1 = 101L
-//        val count1 = 5L
-//
-//        generateIssues(statusId1, count1)
-//        versionService.fetchMetrics(listOf(version))
-//
-//        Assertions.assertThat(versionService.getMetricByVersionIdAndStatusId(version.id, statusId1)).isEqualTo(count1)
-//    }
-//
-//    @Test
-//    fun `returns metrics for each of many statusId`() {
-//        val statusId1 = 101L
-//        val count1 = 5L
-//
-//        val statusId2 = statusId1 + 1
-//        val count2 = count1 + 1
-//
-//        val statusId3 = statusId2 + 1
-//        val count3 = count2 + 1
-//
-//        generateIssues(statusId1, count1)
-//        generateIssues(statusId2, count2)
-//        generateIssues(statusId3, count3)
-//        versionService.fetchMetrics(listOf(version))
-//
-//        Assertions.assertThat(versionService.getMetricByVersionIdAndStatusId(version.id, statusId1)).isEqualTo(count1)
-//        Assertions.assertThat(versionService.getMetricByVersionIdAndStatusId(version.id, statusId2)).isEqualTo(count2)
-//        Assertions.assertThat(versionService.getMetricByVersionIdAndStatusId(version.id, statusId3)).isEqualTo(count3)
-//    }
-//
-//    @Test
-//    fun `returns 0 metrics without fetch`() {
-//        val statusId1 = 101L
-//        val count1 = 5L
-//
-//        generateIssues(statusId1, count1)
-//
-//        Assertions.assertThat(versionService.getMetricByVersionIdAndStatusId(version.id, statusId1)).isEqualTo(0)
-//    }
-//
-//    @Test
-//    fun `returns correct metrics after fetch`() {
-//        val statusId1 = 101L
-//        val count1 = 5L
-//
-//        generateIssues(statusId1, count1)
-//        versionService.fetchMetrics(listOf(version))
-//
-//        Assertions.assertThat(versionService.getMetricByVersionIdAndStatusId(version.id, statusId1)).isEqualTo(count1)
-//    }
-//
-//    @Test
-//    fun `returns old metrics value before fetch`() {
-//        val statusId1 = 101L
-//        val count1 = 5L
-//
-//        generateIssues(statusId1, count1)
-//        versionService.fetchMetrics(listOf(version))
-//        generateIssues(statusId1, count1)
-//
-//        Assertions.assertThat(versionService.getMetricByVersionIdAndStatusId(version.id, statusId1)).isEqualTo(count1)
-//    }
-//
-//    @Test
-//    fun `returns correct metrics after update and fetch`() {
-//        val statusId1 = 101L
-//        val count1 = 5L
-//
-//        generateIssues(statusId1, count1)
-//        versionService.fetchMetrics(listOf(version))
-//        generateIssues(statusId1, count1)
-//        versionService.fetchMetrics(listOf(version))
-//
-//        Assertions.assertThat(versionService.getMetricByVersionIdAndStatusId(version.id, statusId1)).isEqualTo(count1 * 2)
-//    }
-//
-//    @Test
-//    fun `reset actually resets metrics`() {
-//        val statusId1 = 101L
-//        val count1 = 5L
-//
-//        generateIssues(statusId1, count1)
-//        versionService.fetchMetrics(listOf(version))
-//        versionService.reset()
-//
-//        Assertions.assertThat(versionService.getMetricByVersionIdAndStatusId(version.id, statusId1)).isEqualTo(0)
-//    }
-//
-//    fun generateIssues(statusId: Long, count: Long) {
-//        (1..count)
-//            .map {
-//                Issue.make(
-//                    id = -1,
-//                    projectId = project.id,
-//                    fixedVersionId = version.id,
-//                    statusId = statusId
-//                )
-//            }
-//            .also { ver.saveAll(it) }
-//
-//    }
 }
