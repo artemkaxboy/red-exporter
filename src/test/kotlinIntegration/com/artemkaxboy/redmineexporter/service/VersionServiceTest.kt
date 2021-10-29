@@ -111,7 +111,7 @@ internal class VersionServiceTest {
         verify(exactly = 1) { statusMetricsRegistry.versionClosed(any()) }
     }
 
-    @Test @Disabled("Must fix") // TODO closing all versions of project doesn't call version closed
+    @Test //@Disabled("Must fix") // TODO closing all versions of project doesn't call version closed
     fun `notifies registry on closing all versions`() {
 
         every { redmineProperties.projects } returns listOf(project.id)
