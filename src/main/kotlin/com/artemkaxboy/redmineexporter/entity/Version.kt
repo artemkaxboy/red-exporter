@@ -36,19 +36,23 @@ class Version(
 
     @Override
     override fun toString(): String {
-        return this::class.simpleName + "(id = $id , name = $name , project = $project , status = $status )"
+        return this::class.simpleName + "(id = $id , name = $name , projectId = $projectId , status = $status )"
+    }
+
+    companion object {
+
+        /**
+         * Makes entity with fake defaults.
+         */
+        @TestOnly
+        @JvmOverloads
+        fun make(
+            id: Long = -1,
+            name: String = "Main Project",
+            projectId: Long = 1,
+            project: Project? = null,
+            status: String = STATUS_OPENED,
+        ) =
+            Version(id = id, name = name, projectId = projectId, project = project, status = status)
     }
 }
-
-/**
- * Makes entity with fake defaults.
- */
-@TestOnly
-fun makeVersion(
-    id: Long = 1,
-    name: String = "Version Name",
-    projectId: Long = 1,
-    project: Project? = null,
-    status: String = STATUS_OPENED
-) =
-    Version(id, name = name, projectId = projectId, project = project, status = status)

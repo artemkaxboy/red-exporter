@@ -8,7 +8,7 @@ import javax.persistence.*
 @Table(name = "issues")
 class Issue(
 
-    @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = -1,
 
     @Column(name = "tracker_id")
@@ -44,26 +44,30 @@ class Issue(
     override fun toString(): String {
         return this::class.simpleName + "(id = $id , trackerId = $trackerId , projectId = $projectId , statusId = $statusId , priorityId = $priorityId , fixedVersionId = $fixedVersionId , authorId = $authorId )"
     }
-}
 
-/**
- * Makes entity with fake defaults.
- */
-@TestOnly
-fun makeIssue(
-    id: Long = 1,
-    trackerId: Long = 1,
-    projectId: Long = 1,
-    statusId: Long = 1,
-    priorityId: Long = 1,
-    fixedVersionId: Long = 1,
-    authorId: Long = 1,
-) = Issue(
-    id = id,
-    trackerId = trackerId,
-    projectId = projectId,
-    statusId = statusId,
-    priorityId = priorityId,
-    fixedVersionId = fixedVersionId,
-    authorId = authorId
-)
+    companion object {
+
+        /**
+         * Makes entity with fake defaults.
+         */
+        @TestOnly
+        @JvmOverloads
+        fun make(
+            id: Long = -1,
+            trackerId: Long = 1,
+            projectId: Long = 1,
+            statusId: Long = 1,
+            priorityId: Long = 1,
+            fixedVersionId: Long = 1,
+            authorId: Long = 1,
+        ) = Issue(
+            id = id,
+            trackerId = trackerId,
+            projectId = projectId,
+            statusId = statusId,
+            priorityId = priorityId,
+            fixedVersionId = fixedVersionId,
+            authorId = authorId
+        )
+    }
+}

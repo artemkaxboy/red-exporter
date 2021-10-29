@@ -7,6 +7,7 @@ import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.Meter
 import io.micrometer.core.instrument.MeterRegistry
 import mu.KotlinLogging
+import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 
 const val REDMINE_PROJECT_ISSUES = "redmine_project_issues"
@@ -56,13 +57,24 @@ class StatusMetricsRegistry(
     }
 
     private fun fetchDynamicData() {
-        versionService.fetchVersions()
+        versionService.fetchVersionsForPreconfiguredProjects()
         userService.fetchAllUsers()
         issueService.fetchMetrics(versionService.getAllVersions())
         timeEntryService.fetchMetrics(userService.getAllUsers())
     }
 
-    fun registerMetersForVersion(openedVersion: Version) {
+    @EventListener
+    fun versionClosed(event: VersionClosedEvent) {
+        unregisterMetersForVersion(event.version)
+    }
+
+    @EventListener()
+    fun versionOpened(event: VersionOpenedEvent) {
+        registerMetersForVersion(event.version)
+    }
+
+
+    private fun registerMetersForVersion(openedVersion: Version) {
 
         meters[openedVersion] = issueStatusService.getAllStatuses().map { issueStatus ->
             Gauge
@@ -80,7 +92,7 @@ class StatusMetricsRegistry(
         }
     }
 
-    fun unregisterMetersForVersion(closedVersion: Version) {
+    private fun unregisterMetersForVersion(closedVersion: Version) {
         logger.debug {
             "Remove all meters for version: " +
                     "project (#${closedVersion.projectId} ${closedVersion.project?.name}) " +

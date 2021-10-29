@@ -2,6 +2,7 @@ package com.artemkaxboy.redmineexporter.service
 
 import com.artemkaxboy.redmineexporter.entity.IssueStatus
 import com.artemkaxboy.redmineexporter.repository.IssueStatusRepository
+import org.jetbrains.annotations.TestOnly
 import org.springframework.stereotype.Service
 
 @Service
@@ -17,4 +18,12 @@ class IssueStatusService(
     }
 
     fun getAllStatuses(): List<IssueStatus> = statuses
+
+    /**
+     * Resets all fetched metrics.
+     */
+    @TestOnly
+    fun reset() {
+        statuses = emptyList()
+    }
 }

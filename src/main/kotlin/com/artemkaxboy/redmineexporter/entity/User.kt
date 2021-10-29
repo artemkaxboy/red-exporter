@@ -1,6 +1,7 @@
 package com.artemkaxboy.redmineexporter.entity
 
 import org.hibernate.Hibernate
+import org.jetbrains.annotations.TestOnly
 import javax.persistence.*
 
 @Entity
@@ -31,6 +32,22 @@ class User(
 
     @Override
     override fun toString(): String {
-        return this::class.simpleName + "(id = $id , login = $login )"
+        return this::class.simpleName + "(id = $id , login = $login , firstname = $firstname , lastname = $lastname )"
+    }
+
+    companion object {
+
+        /**
+         * Makes entity with fake defaults.
+         */
+        @TestOnly
+        @JvmOverloads
+        fun make(
+            id: Long = -1,
+            login: String = "login",
+            firstname: String? = "John",
+            lastname: String? = "Smith",
+        ) =
+            User(id = id, login = login, firstname = firstname, lastname = lastname)
     }
 }

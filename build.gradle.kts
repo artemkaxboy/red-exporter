@@ -75,6 +75,8 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers:1.16.0")
     testImplementation("org.testcontainers:junit-jupiter:1.16.0")
     testImplementation("org.testcontainers:mysql:1.16.0")
+    testImplementation("io.mockk:mockk:1.12.0")
+    testImplementation("com.ninja-squad:springmockk:3.0.1")
 }
 
 tasks {

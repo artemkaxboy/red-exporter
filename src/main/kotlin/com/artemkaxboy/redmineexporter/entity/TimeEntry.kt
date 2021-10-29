@@ -1,13 +1,14 @@
 package com.artemkaxboy.redmineexporter.entity
 
 import org.hibernate.Hibernate
+import org.jetbrains.annotations.TestOnly
 import javax.persistence.*
 
 @Entity
 @Table(name = "time_entries")
 class TimeEntry(
 
-    @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = -1,
 
     @Column(name = "user_id")
@@ -38,5 +39,23 @@ class TimeEntry(
     @Override
     override fun toString(): String {
         return this::class.simpleName + "(id = $id , userId = $userId , hours = $hours , activityId = $activityId , year = $year , month = $month )"
+    }
+
+    companion object {
+
+        /**
+         * Makes entity with fake defaults.
+         */
+        @TestOnly
+        @JvmOverloads
+        fun make(
+            id: Long = -1,
+            userId: Long = 1,
+            hours: Double = 1.0,
+            activityId: Long = 1,
+            year: Int = 2020,
+            month: Int = 1
+        ) =
+            TimeEntry(id = id, userId = userId, hours = hours, activityId = activityId, year = year, month = month)
     }
 }
