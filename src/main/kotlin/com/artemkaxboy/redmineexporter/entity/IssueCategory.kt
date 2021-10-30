@@ -37,7 +37,6 @@ class IssueCategory(
         /**
          * Makes entity with fake defaults.
          */
-        @TestOnly
         @JvmOverloads
         fun make(
             id: Long = -1,
