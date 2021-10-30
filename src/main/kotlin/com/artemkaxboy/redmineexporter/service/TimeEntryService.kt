@@ -1,6 +1,6 @@
 package com.artemkaxboy.redmineexporter.service
 
-import com.artemkaxboy.redmineexporter.entity.ActivityWithHours
+import com.artemkaxboy.redmineexporter.entity.UserHoursMetricByActivity
 import com.artemkaxboy.redmineexporter.entity.User
 import com.artemkaxboy.redmineexporter.repository.TimeEntryRepository
 import org.springframework.stereotype.Service
@@ -12,7 +12,7 @@ class TimeEntryService(
     private val timeEntryRepository: TimeEntryRepository,
 ) {
 
-    private val hoursByUsersByActivity = mutableMapOf<Long, List<ActivityWithHours>>()
+    private val hoursByUsersByActivity = mutableMapOf<Long, List<UserHoursMetricByActivity>>()
 
     fun getMetricByUserIdAndActivityId(userId: Long, activityId: Long): Double {
         return hoursByUsersByActivity[userId]?.find { it.activityId == activityId }?.hours ?: 0.0

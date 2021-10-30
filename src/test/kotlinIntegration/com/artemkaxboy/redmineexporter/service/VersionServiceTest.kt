@@ -3,7 +3,7 @@ package com.artemkaxboy.redmineexporter.service
 import com.artemkaxboy.redmineexporter.config.properties.RedmineProperties
 import com.artemkaxboy.redmineexporter.entity.Project
 import com.artemkaxboy.redmineexporter.entity.Version
-import com.artemkaxboy.redmineexporter.metrics.StatusMetricsRegistry
+import com.artemkaxboy.redmineexporter.metrics.VersionMeters
 import com.artemkaxboy.redmineexporter.repository.ProjectRepository
 import com.artemkaxboy.redmineexporter.repository.VersionRepository
 import com.ninjasquad.springmockk.MockkBean
@@ -35,7 +35,7 @@ internal class VersionServiceTest {
     lateinit var redmineProperties: RedmineProperties
 
     @MockkBean
-    lateinit var statusMetricsRegistry: StatusMetricsRegistry
+    lateinit var versionMeters: VersionMeters
 
     lateinit var project: Project
 
@@ -76,18 +76,18 @@ internal class VersionServiceTest {
     fun `notifies registry on fetching new versions`() {
 
         every { redmineProperties.projects } returns listOf(project.id)
-        justRun { statusMetricsRegistry.versionOpened(any()) }
+        justRun { versionMeters.versionOpened(any()) }
 
         versionRepository.saveAll(testVersions)
         versionService.fetchVersionsForPreconfiguredProjects()
-        verify(exactly = testVersions.size) { statusMetricsRegistry.versionOpened(any()) }
+        verify(exactly = testVersions.size) { versionMeters.versionOpened(any()) }
     }
 
     @Test
     fun `returns all versions after fetch`() {
 
         every { redmineProperties.projects } returns listOf(project.id)
-        justRun { statusMetricsRegistry.versionOpened(any()) }
+        justRun { versionMeters.versionOpened(any()) }
 
         val expected = versionRepository.saveAll(testVersions)
         versionService.fetchVersionsForPreconfiguredProjects()
@@ -100,37 +100,37 @@ internal class VersionServiceTest {
     fun `notifies registry on closing one versions`() {
 
         every { redmineProperties.projects } returns listOf(project.id)
-        justRun { statusMetricsRegistry.versionOpened(any()) }
-        justRun { statusMetricsRegistry.versionClosed(any()) }
+        justRun { versionMeters.versionOpened(any()) }
+        justRun { versionMeters.versionClosed(any()) }
 
         val saved = versionRepository.saveAll(testVersions)
         versionService.fetchVersionsForPreconfiguredProjects()
 
         versionRepository.delete(saved.first())
         versionService.fetchVersionsForPreconfiguredProjects()
-        verify(exactly = 1) { statusMetricsRegistry.versionClosed(any()) }
+        verify(exactly = 1) { versionMeters.versionClosed(any()) }
     }
 
-    @Test //@Disabled("Must fix") // TODO closing all versions of project doesn't call version closed
+    @Test @Disabled("Must fix") // TODO closing all versions of project doesn't call version closed
     fun `notifies registry on closing all versions`() {
 
         every { redmineProperties.projects } returns listOf(project.id)
-        justRun { statusMetricsRegistry.versionOpened(any()) }
-        justRun { statusMetricsRegistry.versionClosed(any()) }
+        justRun { versionMeters.versionOpened(any()) }
+        justRun { versionMeters.versionClosed(any()) }
 
         val saved = versionRepository.saveAll(testVersions)
         versionService.fetchVersionsForPreconfiguredProjects()
 
         versionRepository.deleteAllById(saved.map { it.id })
         versionService.fetchVersionsForPreconfiguredProjects()
-        verify(exactly = 4) { statusMetricsRegistry.versionClosed(any()) }
+        verify(exactly = 4) { versionMeters.versionClosed(any()) }
     }
 
     @Test
     fun `clears all statuses by reset`() {
 
         every { redmineProperties.projects } returns listOf(project.id)
-        justRun { statusMetricsRegistry.versionOpened(any()) }
+        justRun { versionMeters.versionOpened(any()) }
 
         versionRepository.saveAll(testVersions)
 
