@@ -1,6 +1,6 @@
 package com.artemkaxboy.redmineexporter.entity
 
-class StatusWithMetric(
+class ProjectIssuesMetricByStatusId(
     val statusId: Long,
     val metric: Long,
 ) {

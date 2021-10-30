@@ -1,6 +1,6 @@
 package com.artemkaxboy.redmineexporter.entity
 
-class ActivityWithHours(
+class UserHoursMetricByActivity(
     val activityId: Long,
     val hours: Double,
 ) {

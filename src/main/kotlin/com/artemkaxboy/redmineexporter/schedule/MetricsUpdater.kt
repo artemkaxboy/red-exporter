@@ -18,8 +18,8 @@ class MetricsUpdater(
 
     @Scheduled(fixedRateString = "#{@redmineConfig.properties.updateInterval.toMillis()}")
     fun updateMetrics() {
-        logger.debug { "Scheduler run: `updateMetrics`" }
+        logger.trace { "Scheduler run: `updateMetrics`" }
         statusMetricsRegistry.fetchAllMetrics()
-        logger.debug { "Scheduler finished: `updateMetrics`" }
+        logger.trace { "Scheduler finished: `updateMetrics`" }
     }
 }

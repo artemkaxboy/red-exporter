@@ -9,7 +9,6 @@ import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 
-
 private val logger = KotlinLogging.logger {}
 
 @Service
