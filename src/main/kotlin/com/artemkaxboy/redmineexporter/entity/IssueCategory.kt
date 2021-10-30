@@ -5,24 +5,22 @@ import org.jetbrains.annotations.TestOnly
 import javax.persistence.*
 
 @Entity
-@Table(name = "issue_statuses")
-class IssueStatus(
+@Table(name = "issue_categories")
+class IssueCategory(
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = -1,
 
+    @Column(name = "project_id")
+    val projectId: Long,
+
     val name: String,
-
-    @Column(name = "is_closed")
-    val isClosed: Int,
-
-    val position: Int = id.toInt(),
 ) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
-        other as IssueStatus
+        other as IssueCategory
 
         return id == other.id
     }
@@ -31,7 +29,7 @@ class IssueStatus(
 
     @Override
     override fun toString(): String {
-        return this::class.simpleName + "(id = $id , name = $name , isClosed = $isClosed , position = $position )"
+        return this::class.simpleName + "(id = $id , projectId = $projectId , name = $name )"
     }
 
     companion object {
@@ -43,16 +41,14 @@ class IssueStatus(
         @JvmOverloads
         fun make(
             id: Long = -1,
-            name: String = "Issue Status",
-            isClosed: Int = 0,
-            position: Int = id.toInt(),
-        ) = IssueStatus(
+            projectId: Long = -1,
+            name: String = "Issue Tracker",
+        ) = IssueCategory(
             id = id,
+            projectId = projectId,
             name = name,
-            isClosed = isClosed,
-            position = position,
         )
 
-        val isClosedVariants = (0..1)
+        val emptyCategory = make(name = "")
     }
 }

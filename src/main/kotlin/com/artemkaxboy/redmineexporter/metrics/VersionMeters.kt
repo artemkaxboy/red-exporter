@@ -1,10 +1,9 @@
 package com.artemkaxboy.redmineexporter.metrics
 
+import com.artemkaxboy.redmineexporter.entity.IssueCategory
+import com.artemkaxboy.redmineexporter.entity.IssueStatus
 import com.artemkaxboy.redmineexporter.entity.Version
-import com.artemkaxboy.redmineexporter.service.IssueService
-import com.artemkaxboy.redmineexporter.service.IssueStatusService
-import com.artemkaxboy.redmineexporter.service.IssueTrackerService
-import com.artemkaxboy.redmineexporter.service.IssuePriorityService
+import com.artemkaxboy.redmineexporter.service.*
 import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.Meter
 import io.micrometer.core.instrument.MeterRegistry
@@ -20,6 +19,7 @@ class VersionMeters(
     private val issueStatusService: IssueStatusService,
     private val issueTrackerService: IssueTrackerService,
     private val issuePriorityService: IssuePriorityService,
+    private val issueCategoryService: IssueCategoryService,
 
     // data
     private val issueService: IssueService,
@@ -45,13 +45,15 @@ class VersionMeters(
         issueStatusService.fetchStatuses()
         issueTrackerService.fetchTrackers()
         issuePriorityService.fetchPriorities()
+        issueCategoryService.fetchCategories()
     }
 
     private fun registerMetersForVersion(openedVersion: Version) {
 
         metersByVersion[openedVersion] = registerIssuesByIssueStatusMeters(openedVersion) +
                 registerIssuesByPriorityMeters(openedVersion) +
-                registerIssuesByTrackerMeters(openedVersion)
+                registerIssuesByTrackerMeters(openedVersion) +
+                registerIssuesByCategoriesMeters(openedVersion)
     }
 
     private fun registerIssuesByIssueStatusMeters(version: Version): List<Meter.Id> {
@@ -73,34 +75,59 @@ class VersionMeters(
 
     private fun registerIssuesByTrackerMeters(version: Version): List<Meter.Id> {
 
-        return issueTrackerService.getAllTrackers().map { tracker ->
-            Gauge
-                .builder(REDMINE_PROJECT_ISSUES_TRACKER) {
-                    issueService.getMetricByVersionIdAndIssueTrackerId(version.id, tracker.id)
-                }
-                .tags(
-                    PROJECT_TAG, "${version.project?.name}",
-                    VERSION_TAG, version.name,
-                    TRACKER_TAG, tracker.name,
-                )
-                .register(meterRegistry)
-                .id
+        return issueTrackerService.getAllTrackers().flatMap { tracker ->
+            IssueStatus.isClosedVariants.map { isClosed ->
+                Gauge
+                    .builder(REDMINE_PROJECT_ISSUES_TRACKER) {
+                        issueService.getMetricByVersionIdAndIssueTrackerId(version.id, tracker.id, isClosed)
+                    }
+                    .tags(
+                        PROJECT_TAG, "${version.project?.name}",
+                        VERSION_TAG, version.name,
+                        TRACKER_TAG, tracker.name,
+                        CLOSED_TAG, "$isClosed",
+                    )
+                    .register(meterRegistry)
+                    .id
+            }
         }
     }
 
     private fun registerIssuesByPriorityMeters(version: Version): List<Meter.Id> {
-        return issuePriorityService.getAllPriorities().map { priority ->
-            Gauge
-                .builder(REDMINE_PROJECT_ISSUES_PRIORITY) {
-                    issueService.getMetricByVersionIdAndPriorityId(version.id, priority.id)
-                }
-                .tags(
-                    PROJECT_TAG, "${version.project?.name}",
-                    VERSION_TAG, version.name,
-                    PRIORITY_TAG, priority.name,
-                )
-                .register(meterRegistry)
-                .id
+        return issuePriorityService.getAllPriorities().flatMap { priority ->
+            IssueStatus.isClosedVariants.map { isClosed ->
+                Gauge
+                    .builder(REDMINE_PROJECT_ISSUES_PRIORITY) {
+                        issueService.getMetricByVersionIdAndPriorityIdAndIsClosed(version.id, priority.id, isClosed)
+                    }
+                    .tags(
+                        PROJECT_TAG, "${version.project?.name}",
+                        VERSION_TAG, version.name,
+                        PRIORITY_TAG, priority.name,
+                        CLOSED_TAG, "$isClosed",
+                    )
+                    .register(meterRegistry)
+                    .id
+            }
+        }
+    }
+
+    private fun registerIssuesByCategoriesMeters(version: Version): List<Meter.Id> {
+        return (issueCategoryService.getAllCategories(version.projectId) + IssueCategory.emptyCategory).flatMap { category ->
+            IssueStatus.isClosedVariants.map { isClosed ->
+                Gauge
+                    .builder(REDMINE_PROJECT_ISSUES_CATEGORY) {
+                        issueService.getMetricByVersionIdAndCategoryId(version.id, category.id, isClosed)
+                    }
+                    .tags(
+                        PROJECT_TAG, "${version.project?.name}",
+                        VERSION_TAG, version.name,
+                        CATEGORY_TAG, category.name,
+                        CLOSED_TAG, "$isClosed",
+                    )
+                    .register(meterRegistry)
+                    .id
+            }
         }
     }
 

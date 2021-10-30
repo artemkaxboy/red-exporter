@@ -28,6 +28,9 @@ class Issue(
 
     @Column(name = "author_id")
     val authorId: Long,
+
+    @Column(name = "category_id")
+    val categoryId: Long?,
 ) {
 
     override fun equals(other: Any?): Boolean {
@@ -42,7 +45,7 @@ class Issue(
 
     @Override
     override fun toString(): String {
-        return this::class.simpleName + "(id = $id , trackerId = $trackerId , projectId = $projectId , statusId = $statusId , priorityId = $priorityId , fixedVersionId = $fixedVersionId , authorId = $authorId )"
+        return this::class.simpleName + "(id = $id , trackerId = $trackerId , projectId = $projectId , statusId = $statusId , priorityId = $priorityId , fixedVersionId = $fixedVersionId , authorId = $authorId , categoryId = $categoryId )"
     }
 
     companion object {
@@ -60,6 +63,7 @@ class Issue(
             priorityId: Long = 1,
             fixedVersionId: Long = 1,
             authorId: Long = 1,
+            categoryId: Long? = null,
         ) = Issue(
             id = id,
             trackerId = trackerId,
@@ -67,7 +71,8 @@ class Issue(
             statusId = statusId,
             priorityId = priorityId,
             fixedVersionId = fixedVersionId,
-            authorId = authorId
+            authorId = authorId,
+            categoryId = categoryId,
         )
     }
 }

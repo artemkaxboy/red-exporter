@@ -1,26 +1,28 @@
 package com.artemkaxboy.redmineexporter.metrics
 
 import com.artemkaxboy.redmineexporter.entity.User
-import com.artemkaxboy.redmineexporter.entity.Version
 import com.artemkaxboy.redmineexporter.service.*
 import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.Meter
 import io.micrometer.core.instrument.MeterRegistry
 import mu.KotlinLogging
-import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 
-const val REDMINE_PROJECT_ISSUES = "redmine_project_issues"
-const val STATUS_TAG = "status"
 const val PROJECT_TAG = "project"
 const val VERSION_TAG = "version"
 const val CLOSED_TAG = "closed"
+
+const val REDMINE_PROJECT_ISSUES = "redmine_project_issues"
+const val STATUS_TAG = "status"
 
 const val REDMINE_PROJECT_ISSUES_PRIORITY = "redmine_project_issues_priority"
 const val PRIORITY_TAG = "priority"
 
 const val REDMINE_PROJECT_ISSUES_TRACKER = "redmine_project_issues_tracker"
 const val TRACKER_TAG = "tracker"
+
+const val REDMINE_PROJECT_ISSUES_CATEGORY = "redmine_project_issues_category"
+const val CATEGORY_TAG = "category"
 
 const val REDMINE_USER_ACTIVITIES = "redmine_user_activities"
 const val LOGIN_TAG = "login"
