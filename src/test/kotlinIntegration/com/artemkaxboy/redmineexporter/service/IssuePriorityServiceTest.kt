@@ -1,9 +1,7 @@
 package com.artemkaxboy.redmineexporter.service
 
 import com.artemkaxboy.redmineexporter.entity.ACTIVE_IS_INACTIVE
-import com.artemkaxboy.redmineexporter.entity.Activity
 import com.artemkaxboy.redmineexporter.entity.Priority
-import com.artemkaxboy.redmineexporter.repository.ActivityRepository
 import com.artemkaxboy.redmineexporter.repository.PriorityRepository
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.AfterEach
@@ -15,13 +13,13 @@ import org.springframework.test.context.junit4.SpringRunner
 
 @SpringBootTest
 @RunWith(SpringRunner::class)
-internal class PriorityServiceTest {
+internal class IssuePriorityServiceTest {
 
     @Autowired
     lateinit var priorityRepository: PriorityRepository
 
     @Autowired
-    lateinit var priorityService: PriorityService
+    lateinit var issuePriorityService: IssuePriorityService
 
     val testPriorities = listOf(
         Priority.make(name = "Super High"),
@@ -33,7 +31,7 @@ internal class PriorityServiceTest {
     @AfterEach
     fun clearRepository() {
         priorityRepository.deleteAllInBatch()
-        priorityService.reset()
+        issuePriorityService.reset()
     }
 
     @Test
@@ -41,7 +39,7 @@ internal class PriorityServiceTest {
 
         priorityRepository.saveAll(testPriorities)
 
-        val got = priorityService.getAllPriorities()
+        val got = issuePriorityService.getAllPriorities()
         Assertions.assertThat(got).isEmpty()
     }
 
@@ -49,9 +47,9 @@ internal class PriorityServiceTest {
     fun `returns all priorities after fetch`() {
 
         val expected = priorityRepository.saveAll(testPriorities)
-        priorityService.fetchPriorities()
+        issuePriorityService.fetchPriorities()
 
-        val got = priorityService.getAllPriorities()
+        val got = issuePriorityService.getAllPriorities()
         Assertions.assertThat(got).hasSameElementsAs(expected)
     }
 
@@ -59,9 +57,9 @@ internal class PriorityServiceTest {
     fun `does not return inactive priority`() {
 
         priorityRepository.save(Priority.make(active = ACTIVE_IS_INACTIVE))
-        priorityService.fetchPriorities()
+        issuePriorityService.fetchPriorities()
 
-        val got = priorityService.getAllPriorities()
+        val got = issuePriorityService.getAllPriorities()
         Assertions.assertThat(got).isEmpty()
     }
 
@@ -69,9 +67,9 @@ internal class PriorityServiceTest {
     fun `does not return project special priority`() {
 
         priorityRepository.save(Priority.make(projectId = 1))
-        priorityService.fetchPriorities()
+        issuePriorityService.fetchPriorities()
 
-        val got = priorityService.getAllPriorities()
+        val got = issuePriorityService.getAllPriorities()
         Assertions.assertThat(got).isEmpty()
     }
 
@@ -79,10 +77,10 @@ internal class PriorityServiceTest {
     fun `clears all priorities by reset`() {
 
         priorityRepository.saveAll(testPriorities)
-        priorityService.fetchPriorities()
-        priorityService.reset()
+        issuePriorityService.fetchPriorities()
+        issuePriorityService.reset()
 
-        val got = priorityService.getAllPriorities()
+        val got = issuePriorityService.getAllPriorities()
         Assertions.assertThat(got).isEmpty()
     }
 }

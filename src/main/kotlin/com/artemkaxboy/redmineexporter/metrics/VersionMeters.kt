@@ -3,7 +3,8 @@ package com.artemkaxboy.redmineexporter.metrics
 import com.artemkaxboy.redmineexporter.entity.Version
 import com.artemkaxboy.redmineexporter.service.IssueService
 import com.artemkaxboy.redmineexporter.service.IssueStatusService
-import com.artemkaxboy.redmineexporter.service.PriorityService
+import com.artemkaxboy.redmineexporter.service.IssueTrackerService
+import com.artemkaxboy.redmineexporter.service.IssuePriorityService
 import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.Meter
 import io.micrometer.core.instrument.MeterRegistry
@@ -17,7 +18,8 @@ private val logger = KotlinLogging.logger {}
 class VersionMeters(
     // catalogs
     private val issueStatusService: IssueStatusService,
-    private val priorityService: PriorityService,
+    private val issueTrackerService: IssueTrackerService,
+    private val issuePriorityService: IssuePriorityService,
 
     // data
     private val issueService: IssueService,
@@ -41,13 +43,15 @@ class VersionMeters(
     fun fetchCatalogs() {
 
         issueStatusService.fetchStatuses()
-        priorityService.fetchPriorities()
+        issueTrackerService.fetchTrackers()
+        issuePriorityService.fetchPriorities()
     }
 
     private fun registerMetersForVersion(openedVersion: Version) {
 
-        metersByVersion[openedVersion] =
-            registerIssuesByIssueStatusMeters(openedVersion) + registerIssuesByPriorityMeters(openedVersion)
+        metersByVersion[openedVersion] = registerIssuesByIssueStatusMeters(openedVersion) +
+                registerIssuesByPriorityMeters(openedVersion) +
+                registerIssuesByTrackerMeters(openedVersion)
     }
 
     private fun registerIssuesByIssueStatusMeters(version: Version): List<Meter.Id> {
@@ -67,8 +71,25 @@ class VersionMeters(
         }
     }
 
+    private fun registerIssuesByTrackerMeters(version: Version): List<Meter.Id> {
+
+        return issueTrackerService.getAllTrackers().map { tracker ->
+            Gauge
+                .builder(REDMINE_PROJECT_ISSUES_TRACKER) {
+                    issueService.getMetricByVersionIdAndIssueTrackerId(version.id, tracker.id)
+                }
+                .tags(
+                    PROJECT_TAG, "${version.project?.name}",
+                    VERSION_TAG, version.name,
+                    TRACKER_TAG, tracker.name,
+                )
+                .register(meterRegistry)
+                .id
+        }
+    }
+
     private fun registerIssuesByPriorityMeters(version: Version): List<Meter.Id> {
-        return priorityService.getAllPriorities().map { priority ->
+        return issuePriorityService.getAllPriorities().map { priority ->
             Gauge
                 .builder(REDMINE_PROJECT_ISSUES_PRIORITY) {
                     issueService.getMetricByVersionIdAndPriorityId(version.id, priority.id)

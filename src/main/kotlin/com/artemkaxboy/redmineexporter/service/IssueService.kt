@@ -2,6 +2,7 @@ package com.artemkaxboy.redmineexporter.service
 
 import com.artemkaxboy.redmineexporter.entity.ProjectIssuesMetricByPriorityId
 import com.artemkaxboy.redmineexporter.entity.ProjectIssuesMetricByStatusId
+import com.artemkaxboy.redmineexporter.entity.ProjectIssuesMetricByTrackerId
 import com.artemkaxboy.redmineexporter.entity.Version
 import com.artemkaxboy.redmineexporter.repository.IssueRepository
 import org.jetbrains.annotations.TestOnly
@@ -27,6 +28,11 @@ class IssueService(
     private val metricsByVersionByIssuePriority = mutableMapOf<Long, List<ProjectIssuesMetricByPriorityId>>()
 
     /**
+     * Map containing live data values (Map: <VersionID <IssueTrackerID, LiveDataMetrics>>).
+     */
+    private val metricsByVersionByIssueTracker = mutableMapOf<Long, List<ProjectIssuesMetricByTrackerId>>()
+
+    /**
      * Returns last fetched metrics by given params. All metrics are empty before calling [fetchMetrics].
      *
      * @param versionId project version id to get metric for
@@ -44,6 +50,16 @@ class IssueService(
      */
     fun getMetricByVersionIdAndPriorityId(versionId: Long, priorityId: Long): Long {
         return metricsByVersionByIssuePriority[versionId]?.find { it.priorityId == priorityId }?.metric ?: 0
+    }
+
+    /**
+     * Returns last fetched metrics by given params. All metrics are empty before calling [fetchMetrics].
+     *
+     * @param versionId project version id to get metric for
+     * @param priorityId priority (High, Normal, Low, etc.) id to get metric for
+     */
+    fun getMetricByVersionIdAndIssueTrackerId(versionId: Long, trackerId: Long): Long {
+        return metricsByVersionByIssueTracker[versionId]?.find { it.trackerId == trackerId }?.metric ?: 0
     }
 
     /**

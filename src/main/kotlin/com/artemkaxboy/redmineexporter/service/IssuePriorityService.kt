@@ -6,7 +6,7 @@ import org.jetbrains.annotations.TestOnly
 import org.springframework.stereotype.Service
 
 @Service
-class PriorityService(
+class IssuePriorityService(
 
     private val priorityRepository: PriorityRepository,
 ) {

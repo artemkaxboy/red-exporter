@@ -19,6 +19,9 @@ const val CLOSED_TAG = "closed"
 const val REDMINE_PROJECT_ISSUES_PRIORITY = "redmine_project_issues_priority"
 const val PRIORITY_TAG = "priority"
 
+const val REDMINE_PROJECT_ISSUES_TRACKER = "redmine_project_issues_tracker"
+const val TRACKER_TAG = "tracker"
+
 const val REDMINE_USER_ACTIVITIES = "redmine_user_activities"
 const val LOGIN_TAG = "login"
 const val NAME_TAG = "name"
