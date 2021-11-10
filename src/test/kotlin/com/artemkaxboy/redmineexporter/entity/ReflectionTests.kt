@@ -4,6 +4,8 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider
 import org.springframework.core.type.filter.AnnotationTypeFilter
+import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.persistence.Entity
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObject
@@ -44,7 +46,8 @@ internal class ReflectionTests {
 
         clazz.memberProperties.forEach {
             when (it.returnType.classifier) {
-                Long::class, String::class, Int::class, Double::class, Float::class, Char::class ->
+                Long::class, String::class, Int::class, Double::class, Float::class, Char::class, LocalDate::class,
+                LocalDateTime::class ->
                     Assertions.assertThat(toStringResult).containsIgnoringCase("${it.name} = ")
                 else ->
                     println("Skipped: ${clazz.simpleName}.${it.name}: [${it.returnType.classifier}]")

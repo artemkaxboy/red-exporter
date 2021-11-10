@@ -65,6 +65,7 @@ class VersionMeters(
                 .tags(
                     PROJECT_TAG, "${version.project?.name}",
                     VERSION_TAG, version.name,
+                    VERSION_DATE_TAG, version.effectiveDateString,
                     STATUS_TAG, issueStatus.name,
                     CLOSED_TAG, "${issueStatus.isClosed}",
                 )
@@ -84,6 +85,7 @@ class VersionMeters(
                     .tags(
                         PROJECT_TAG, "${version.project?.name}",
                         VERSION_TAG, version.name,
+                        VERSION_DATE_TAG, version.effectiveDateString,
                         TRACKER_TAG, tracker.name,
                         CLOSED_TAG, "$isClosed",
                     )
@@ -103,6 +105,7 @@ class VersionMeters(
                     .tags(
                         PROJECT_TAG, "${version.project?.name}",
                         VERSION_TAG, version.name,
+                        VERSION_DATE_TAG, version.effectiveDateString,
                         PRIORITY_TAG, priority.name,
                         CLOSED_TAG, "$isClosed",
                     )
@@ -122,6 +125,7 @@ class VersionMeters(
                     .tags(
                         PROJECT_TAG, "${version.project?.name}",
                         VERSION_TAG, version.name,
+                        VERSION_DATE_TAG, version.effectiveDateString,
                         CATEGORY_TAG, category.name,
                         CLOSED_TAG, "$isClosed",
                     )
