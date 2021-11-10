@@ -29,7 +29,7 @@ class Version(
 ) {
 
     val effectiveDateString: String
-        get() = effectiveDate?.let { it.toString() } ?: ""
+        get() = effectiveDate?.toString() ?: ""
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
