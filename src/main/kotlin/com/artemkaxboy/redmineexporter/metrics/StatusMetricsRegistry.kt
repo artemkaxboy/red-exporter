@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component
 
 const val PROJECT_TAG = "project"
 const val VERSION_TAG = "version"
+const val VERSION_DATE_TAG = "version_date"
 const val CLOSED_TAG = "closed"
 
 const val REDMINE_PROJECT_ISSUES = "redmine_project_issues"

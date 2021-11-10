@@ -3,13 +3,14 @@ package com.artemkaxboy.redmineexporter.entity
 import com.artemkaxboy.redmineexporter.repository.STATUS_OPENED
 import org.hibernate.Hibernate
 import org.jetbrains.annotations.TestOnly
+import java.time.LocalDate
 import javax.persistence.*
 
 @Entity
 @Table(name = "versions")
 class Version(
 
-    @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = -1,
 
     val name: String,
@@ -22,7 +23,13 @@ class Version(
     val project: Project?,
 
     val status: String,
+
+    @Column(name = "effective_date")
+    val effectiveDate: LocalDate?,
 ) {
+
+    val effectiveDateString: String
+        get() = effectiveDate?.let { it.toString() } ?: ""
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -36,7 +43,7 @@ class Version(
 
     @Override
     override fun toString(): String {
-        return this::class.simpleName + "(id = $id , name = $name , projectId = $projectId , status = $status )"
+        return this::class.simpleName + "(id = $id , name = $name , projectId = $projectId , status = $status, effectiveDate = $effectiveDate )"
     }
 
     companion object {
@@ -52,7 +59,14 @@ class Version(
             projectId: Long = 1,
             project: Project? = null,
             status: String = STATUS_OPENED,
-        ) =
-            Version(id = id, name = name, projectId = projectId, project = project, status = status)
+            effectiveDate: LocalDate = LocalDate.now(),
+        ) = Version(
+            id = id,
+            name = name,
+            projectId = projectId,
+            project = project,
+            status = status,
+            effectiveDate = effectiveDate,
+        )
     }
 }
