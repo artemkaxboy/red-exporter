@@ -11,7 +11,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObject
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.functions
-import kotlin.reflect.full.memberProperties
+import kotlin.reflect.full.primaryConstructor
 
 const val MAKE_FUN_NAME = "make"
 const val TO_STRING_FUN_NAME = "toString"
@@ -44,13 +44,13 @@ internal class ReflectionTests {
         val toStringResult = toString(clazz, instance)
         Assertions.assertThat(toStringResult).isNotNull
 
-        clazz.memberProperties.forEach {
-            when (it.returnType.classifier) {
+        clazz.primaryConstructor?.parameters?.forEach {
+            when (it.type.classifier) {
                 Long::class, String::class, Int::class, Double::class, Float::class, Char::class, LocalDate::class,
                 LocalDateTime::class ->
                     Assertions.assertThat(toStringResult).containsIgnoringCase("${it.name} = ")
                 else ->
-                    println("Skipped: ${clazz.simpleName}.${it.name}: [${it.returnType.classifier}]")
+                    println("Skipped: ${clazz.simpleName}.${it.name}: [${it.type.classifier}]")
             }
         }
     }
