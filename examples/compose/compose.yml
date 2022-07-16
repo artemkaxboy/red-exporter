@@ -1,0 +1,15 @@
+services:
+  redmine-exporter:
+    image: artemkaxboy/red-exporter
+    environment:
+      DATABASE_HOST: ${DATABASE_HOST:?}
+      DATABASE_NAME: ${DATABASE_NAME:?}
+      DATABASE_USERNAME: ${DATABASE_USERNAME:?}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:?}
+      REDMINE_PROJECTS: ${REDMINE_PROJECTS:-}
+      REDMINE_USERS: ${REDMINE_USERS:-}
+    deploy:
+      restart_policy:
+        delay: 600s
+    ports:
+      - "8080:8080"
